@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Stoicism on MoonLight`s Blog</title>
-    <link>https://moonlightmazed.github.io/tags/stoicism/</link>
-    <description>Recent content in Stoicism on MoonLight`s Blog</description>
+    <title>Kubernetes on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/kubernetes/</link>
+    <description>Recent content in Kubernetes on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
-    <language>zh</language>
+    <language>zh-Hans</language>
     <lastBuildDate>Wed, 01 Jan 2020 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://moonlightmazed.github.io/tags/stoicism/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://moonlightmazed.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Who am I ?!</title>
       <link>https://moonlightmazed.github.io/post/iam/</link>

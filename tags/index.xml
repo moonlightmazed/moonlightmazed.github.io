@@ -1,18 +1,32 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on MoonLight`s Blog</title>
+    <title>Tags on MoonLightMaze’s Blog</title>
     <link>https://moonlightmazed.github.io/tags/</link>
-    <description>Recent content in Tags on MoonLight`s Blog</description>
+    <description>Recent content in Tags on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
-    <language>zh</language>
+    <language>zh-Hans</language>
     <lastBuildDate>Wed, 01 Jan 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://moonlightmazed.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Stoicism</title>
-      <link>https://moonlightmazed.github.io/tags/stoicism/</link>
+      <title>Kubernetes</title>
+      <link>https://moonlightmazed.github.io/tags/kubernetes/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>https://moonlightmazed.github.io/tags/stoicism/</guid>
+      <guid>https://moonlightmazed.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag1</title>
+      <link>https://moonlightmazed.github.io/tags/tag1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/tag1/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag2</title>
+      <link>https://moonlightmazed.github.io/tags/tag2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/tag2/</guid>
       <description></description>
     </item>
   </channel>

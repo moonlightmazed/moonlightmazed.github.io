@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harbor | MoonLightMaze’s Blog</title>
+
+    
+  
+    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+  
+
+
+<link rel="canonical" href="https://moonlightmazed.github.io/posts/cicd/harbor/" />
+
+
+
+<meta name="author" content="Author Name" />
+<meta name="description" content="Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。" />
+
+
+<meta name="keywords" content="仓库,Harbor">
+
+
+
+<meta name="generator" content="Hugo 0.145.0">
+
+
+<meta property="og:url" content="https://moonlightmazed.github.io/posts/cicd/harbor/">
+  <meta property="og:site_name" content="MoonLightMaze’s Blog">
+  <meta property="og:title" content="Harbor">
+  <meta property="og:description" content="Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-01-13T18:48:49+08:00">
+    <meta property="article:modified_time" content="2024-01-13T18:48:49+08:00">
+    <meta property="article:tag" content="仓库">
+    <meta property="article:tag" content="Harbor">
+    <meta property="og:image" content="https://moonlightmazed.github.io/posts/cicd/harbor/image.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://moonlightmazed.github.io/posts/cicd/harbor/image.png">
+  <meta name="twitter:title" content="Harbor">
+  <meta name="twitter:description" content="Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。">
+
+
+
+
+  
+
+<link rel="stylesheet" href="/css/output.min.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/avatar.png" alt="MoonLightMaze’s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="https://moonlightmazed.github.io/" class="text-lg font-semibold cursor-pointer">
+          MoonLightMaze’s Blog
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">代码写的越急，程序跑得越慢</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/" target="" title="home">
+    
+    <ion-icon name="home"></ion-icon>
+    
+    home
+  </a>
+</li>
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
+</li>
+
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    
+    <ion-icon name="logo-github"></ion-icon>
+    
+    GitHub
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/" target="" title="home">
+    <ion-icon class="group-hover:text-primary-content" name="home"></ion-icon>
+  </a>
+  
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    <ion-icon class="group-hover:text-primary-content" name="logo-github"></ion-icon>
+  </a>
+  
+
+
+
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="Harbor">
+  <meta itemprop="description" content="Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。">
+  <meta itemprop="datePublished" content="2024-01-13T18:48:49+08:00">
+  <meta itemprop="dateModified" content="2024-01-13T18:48:49+08:00">
+  <meta itemprop="wordCount" content="545">
+  <meta itemprop="image" content="https://moonlightmazed.github.io/posts/cicd/harbor/image.png">
+  <meta itemprop="keywords" content="仓库,Harbor">
+
+      <header>
+        <h1 itemprop="headline">Harbor</h1>
+        <p class="text-sm">
+          
+            <span data-format="luxon">2024-01-13T18:48:49&#43;08:00</span>
+          
+
+          | <span>2分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              <span data-format="luxon">2024-01-13T18:48:49&#43;08:00</span>
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">Author Name</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+
+        <h2 id="docker-安装">Docker 安装</h2>
+<h3 id="更新系统与安装依赖">更新系统与安装依赖</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo dnf update -y
+</span></span><span style="display:flex;"><span>sudo dnf install -y yum-utils device-mapper-persistent-data lvm2
+</span></span></code></pre></div><h3 id="配置国内-docker-源">配置国内 Docker 源</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+</span></span><span style="display:flex;"><span>sudo sed -i <span style="color:#e6db74">&#39;s/download.docker.com/mirrors.aliyun.com\/docker-ce/&#39;</span> /etc/yum.repos.d/docker-ce.repo
+</span></span></code></pre></div><h3 id="安装-docker">安装 Docker</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo dnf install -y docker-ce docker-ce-cli containerd.io
+</span></span></code></pre></div><h3 id="安装完成后启动服务并设置开机自启">安装完成后启动服务并设置开机自启</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo systemctl start docker
+</span></span><span style="display:flex;"><span>sudo systemctl enable docker
+</span></span></code></pre></div><h3 id="配置国内镜像加速器">配置国内镜像加速器</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/docker
+</span></span><span style="display:flex;"><span>sudo tee /etc/docker/daemon.json <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  &#34;registry-mirrors&#34;: [
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   &#34;https://192e82cca03a4a8aa64fea319af4dd55.mirror.swr.myhuaweicloud.com&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;https://yp8sluaa.mirror.aliyuncs.com&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;https://registry.docker-cn.com&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;https://mirror.ccs.tencentyun.com&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;https://registry.hub.docker.com&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;http://hub-mirror.c.163.com&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;https://docker.mirrors.ustc.edu.cn&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;https://registry.docker-cn.com&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">}
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h2 id="证书">证书</h2>
+<h3 id="创建证书目录">创建证书目录</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo mkdir -p /etc/harbor/ssl
+</span></span><span style="display:flex;"><span>cd /etc/harbor/ssl
+</span></span></code></pre></div><h3 id="生成自签名证书">生成自签名证书</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 生成私钥</span>
+</span></span><span style="display:flex;"><span>sudo openssl genrsa -out harbor.local.com.key <span style="color:#ae81ff">2048</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成证书签名请求（注意替换IP/域名）</span>
+</span></span><span style="display:flex;"><span>sudo openssl req -new -key harbor.local.com.key -out harbor.local.com.csr -subj <span style="color:#e6db74">&#34;/CN=harbor.local.com&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成自签名证书（有效期10年）</span>
+</span></span><span style="display:flex;"><span>openssl req -x509 -nodes -days <span style="color:#ae81ff">3650</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -newkey rsa:2048 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -keyout harbor.local.com.key <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -out harbor.local.com.crt <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -subj <span style="color:#e6db74">&#34;/CN=harbor.local.com&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>  -addext <span style="color:#e6db74">&#34;subjectAltName=IP:192.168.66.66,DNS:harbor.local.com&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#设置权限</span>
+</span></span><span style="display:flex;"><span>sudo chmod <span style="color:#ae81ff">600</span> harbor.local.com.key
+</span></span></code></pre></div><h3 id="将证书加入系统">将证书加入系统</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 将Harbor的证书复制到系统CA信任目录</span>
+</span></span><span style="display:flex;"><span>sudo mkdir -p /etc/pki/ca-trust/source/anchors
+</span></span><span style="display:flex;"><span>sudo cp /etc/harbor/ssl/harbor.local.com.crt /etc/pki/ca-trust/source/anchors/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 更新系统证书信任库</span>
+</span></span><span style="display:flex;"><span>sudo update-ca-trust extract
+</span></span></code></pre></div><h3 id="验证证书信任状态">验证证书信任状态</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 检查证书是否已加入信任库</span>
+</span></span><span style="display:flex;"><span>sudo trust list | grep harbor.local.com
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 应显示类似：harbor.local.com: CN=harbor.local.com</span>
+</span></span></code></pre></div><h3 id="docker-证书信任">docker 证书信任</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 创建Docker证书目录</span>
+</span></span><span style="display:flex;"><span>sudo mkdir -p /etc/docker/certs.d/harbor.local.com
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 复制证书到Docker目录</span>
+</span></span><span style="display:flex;"><span>sudo cp /etc/harbor/ssl/harbor.local.com.crt /etc/docker/certs.d/harbor.local.com/ca.crt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 重启Docker服务</span>
+</span></span><span style="display:flex;"><span>sudo systemctl daemon-reload
+</span></span><span style="display:flex;"><span>sudo systemctl restart docker
+</span></span></code></pre></div><h3 id="使用-openssl-验证证书链">使用 openssl 验证证书链</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>openssl s_client -connect harbor.local.com:443 -showcerts
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查输出中是否包含Verify return code: 0 (ok)</span>
+</span></span></code></pre></div><h3 id="使用-lets-encrypt-免费证书生产环境推荐">使用 Let&rsquo;s Encrypt 免费证书（生产环境推荐）</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 安装Certbot</span>
+</span></span><span style="display:flex;"><span>sudo yum install -y certbot
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成证书</span>
+</span></span><span style="display:flex;"><span>sudo certbot certonly --standalone -d harbor.local.com
+</span></span></code></pre></div><h2 id="部署-harbor">部署 harbor</h2>
+<h3 id="下载镜像">下载镜像</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget https://github.com/amy5200/harbor-arm64/releases/download/v2.11.0/harbor-v2.11.0-aarch64.tar.gz
+</span></span><span style="display:flex;"><span>sudo tar -zxvf harbor-v2.11.0-aarch64.tar.gz -C /usr/local
+</span></span><span style="display:flex;"><span>cd /usr/local/harbor
+</span></span></code></pre></div><h3 id="配置文件">配置文件</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">hostname</span>: <span style="color:#ae81ff">harbor.local.com</span> <span style="color:#75715e"># 域名</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">http</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span> <span style="color:#75715e"># 非必要可注释</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">https</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">port</span>: <span style="color:#ae81ff">443</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">certificate</span>: <span style="color:#ae81ff">/etc/harbor/ssl/harbor.local.com.crt</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">private_key</span>: <span style="color:#ae81ff">/etc/harbor/ssl/harbor.local.com.key</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">harbor_admin_password</span>: <span style="color:#ae81ff">Harbor12345</span> <span style="color:#75715e"># 管理员密码</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">data_volume</span>: <span style="color:#ae81ff">/data/harbor</span> <span style="color:#75715e"># 存储路径</span>
+</span></span></code></pre></div><h3 id="启动">启动</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 预处理配置</span>
+</span></span><span style="display:flex;"><span>sudo ./prepare
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 启动安装</span>
+</span></span><span style="display:flex;"><span>sudo ./install.sh
+</span></span></code></pre></div><h3 id="登陆">登陆</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 验证</span>
+</span></span><span style="display:flex;"><span>curl https://harbor.local.com
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Docker客户端登陆</span>
+</span></span><span style="display:flex;"><span>docker login harbor.local.com -u admin
+</span></span></code></pre></div>
+
+        
+      </section>
+
+      
+      <div class="divider"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4">
+        
+        <a class="group btn btn-outline" href="/posts/kubernetes/%E7%AE%80%E4%BB%8B/" title="简介">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">简介</span>
+          </div>
+        </a>
+        
+
+        
+        <div></div>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  <div class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker-安装">Docker 安装</a>
+      <ul>
+        <li><a href="#更新系统与安装依赖">更新系统与安装依赖</a></li>
+        <li><a href="#配置国内-docker-源">配置国内 Docker 源</a></li>
+        <li><a href="#安装-docker">安装 Docker</a></li>
+        <li><a href="#安装完成后启动服务并设置开机自启">安装完成后启动服务并设置开机自启</a></li>
+        <li><a href="#配置国内镜像加速器">配置国内镜像加速器</a></li>
+      </ul>
+    </li>
+    <li><a href="#证书">证书</a>
+      <ul>
+        <li><a href="#创建证书目录">创建证书目录</a></li>
+        <li><a href="#生成自签名证书">生成自签名证书</a></li>
+        <li><a href="#将证书加入系统">将证书加入系统</a></li>
+        <li><a href="#验证证书信任状态">验证证书信任状态</a></li>
+        <li><a href="#docker-证书信任">docker 证书信任</a></li>
+        <li><a href="#使用-openssl-验证证书链">使用 openssl 验证证书链</a></li>
+        <li><a href="#使用-lets-encrypt-免费证书生产环境推荐">使用 Let&rsquo;s Encrypt 免费证书（生产环境推荐）</a></li>
+      </ul>
+    </li>
+    <li><a href="#部署-harbor">部署 harbor</a>
+      <ul>
+        <li><a href="#下载镜像">下载镜像</a></li>
+        <li><a href="#配置文件">配置文件</a></li>
+        <li><a href="#启动">启动</a></li>
+        <li><a href="#登陆">登陆</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2018 - 2025 MoonLightMaze’s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>没什么想介绍的，一个很大众的全栈码农&hellip;</p>
+<p>喜欢代码，车，马，真的是 🐎</p>
+<p>讨厌别人让我给自己的代码写文档
+最厌烦的是别人的程序没有留下文档</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">目标</div>
+
+        <div class="prose dark:prose-invert">
+          <p>学习 K8S 源码！加油！</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+  <p>
+    © 2018 - 2025 MoonLightMaze’s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme =  null 
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+
+  
+  
+    
+  
+  <script src="/js/grid.min.js"></script>
+
+
+
+
+  
+
+<script src="/js/main.min.js"></script>
+
+    
+
+
+<script
+  src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"
+  integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0="
+  crossorigin="anonymous"
+></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+  
+    <script type="module">
+      import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+      mediumZoom('#dream-single-post-content img', {
+        background: 'oklch(var(--b1))',
+        margin: 24,
+      })
+    </script>
+  
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

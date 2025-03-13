@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>MoonLightMaze’s Blog</title>
-    <link>https://moonlightmazed.github.io/</link>
-    <description>Recent content on MoonLightMaze’s Blog</description>
+    <title>Posts on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/posts/</link>
+    <description>Recent content in Posts on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
     <lastBuildDate>Thu, 13 Mar 2025 16:56:55 +0800</lastBuildDate>
-    <atom:link href="https://moonlightmazed.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://moonlightmazed.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>简介</title>
       <link>https://moonlightmazed.github.io/posts/kubernetes/%E7%AE%80%E4%BB%8B/</link>

@@ -6,20 +6,20 @@
     <description>Recent content in Categories on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Thu, 13 Mar 2025 16:56:55 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 12 May 2024 13:43:02 +0800</lastBuildDate>
     <atom:link href="https://moonlightmazed.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Kubernetes</title>
-      <link>https://moonlightmazed.github.io/categories/kubernetes/</link>
-      <pubDate>Thu, 13 Mar 2025 16:56:55 +0800</pubDate>
-      <guid>https://moonlightmazed.github.io/categories/kubernetes/</guid>
-      <description></description>
-    </item>
     <item>
       <title>CICD</title>
       <link>https://moonlightmazed.github.io/categories/cicd/</link>
       <pubDate>Thu, 14 Mar 2024 03:03:52 +0800</pubDate>
       <guid>https://moonlightmazed.github.io/categories/cicd/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Kubernete</title>
+      <link>https://moonlightmazed.github.io/categories/kubernete/</link>
+      <pubDate>Fri, 02 Oct 2020 17:43:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/categories/kubernete/</guid>
       <description></description>
     </item>
   </channel>

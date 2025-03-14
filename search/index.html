@@ -368,48 +368,15 @@ x-data="{
 
   <div>
   
-  <p>
-    © 2018 - 2025 MoonLightMaze’s Blog
-  </p>
+ 
   
 
   
-  <p class="text-sm">
-    🌱
-    <span class="text-base-content/60">
-      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
-      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
-    >
-  </p>
+
   
 </div>
 
-  <div
-  x-data="{ icons: [
-    { name: 'sunny', status: 'n' },
-    { name: 'moon', status: 'y' },
-    { name: 'desktop', status: 'auto' }
-  ] }"
-  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
->
-  <template x-for="icon in icons">
-    <div
-      role="button"
-      tabindex="0"
-      :aria-label="'Select ' + icon.name + ' mode'"
-      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
-      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
-      @click="$store.darkMode.toggle(icon.status)"
-    >
-      <ion-icon
-        :name="`${icon.name}-outline`"
-        class="group-hover:text-primary-content"
-        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
-      >
-      </ion-icon>
-    </div>
-  </template>
-</div>
+  
 
 </footer>
 
@@ -469,48 +436,15 @@ x-data="{
 
   <div>
   
-  <p>
-    © 2018 - 2025 MoonLightMaze’s Blog
-  </p>
+ 
   
 
   
-  <p class="text-sm">
-    🌱
-    <span class="text-base-content/60">
-      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
-      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
-    >
-  </p>
+
   
 </div>
 
-  <div
-  x-data="{ icons: [
-    { name: 'sunny', status: 'n' },
-    { name: 'moon', status: 'y' },
-    { name: 'desktop', status: 'auto' }
-  ] }"
-  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
->
-  <template x-for="icon in icons">
-    <div
-      role="button"
-      tabindex="0"
-      :aria-label="'Select ' + icon.name + ' mode'"
-      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
-      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
-      @click="$store.darkMode.toggle(icon.status)"
-    >
-      <ion-icon
-        :name="`${icon.name}-outline`"
-        class="group-hover:text-primary-content"
-        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
-      >
-      </ion-icon>
-    </div>
-  </template>
-</div>
+  
 
 </footer>
 
@@ -550,9 +484,11 @@ x-data="{
 
 
 
+
+
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js" integrity="sha256-42IbU8t3tOwwbexB7ZVRHm3YDRf65aBPPjRtIUufj5I=" crossorigin="anonymous"></script>
 <script>
-  var fuseData = [{"author":"Author Name","avatar":null,"categories":["Kubernetes"],"description":"The remaining content of your post.这就是个简介","readingTime":1,"tags":["K8S"],"title":"简介","url":"/posts/kubernetes/%E7%AE%80%E4%BB%8B/"},{"author":"Author Name","avatar":null,"categories":["CICD"],"description":"Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。","readingTime":2,"tags":["仓库","Harbor"],"title":"Harbor","url":"/posts/cicd/harbor/"}];
+  var fuseData = [{"author":"Author Name","avatar":null,"categories":["Kubernetes"],"description":"The remaining content of your post.这就是个简介","readingTime":1,"tags":["K8S"],"title":"简介","url":"/posts/kubernetes/%E7%AE%80%E4%BB%8B/"},{"author":"MoonLightMaze","avatar":null,"categories":["CICD"],"description":"Tekton 是一个功能强大且灵活的开源框架，用于创建 CI/CD 系统，允许开发人员跨云提供商和本地系统进行构建、测试和部署","readingTime":3,"tags":["CI","Tekton"],"title":"Tekton","url":"/posts/cicd/tekton/"},{"author":"Author Name","avatar":null,"categories":["CICD"],"description":"Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。","readingTime":2,"tags":["仓库","Harbor"],"title":"Harbor","url":"/posts/cicd/harbor/"}];
   var fuseOptions = {
     keys: [
       "title",

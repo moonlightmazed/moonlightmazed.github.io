@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ConfigMap &amp; Secret on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/configmap--secret/</link>
+    <description>Recent content in ConfigMap &amp; Secret on MoonLightMaze’s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Sat, 03 Oct 2020 09:11:02 +0800</lastBuildDate>
+    <atom:link href="https://moonlightmazed.github.io/tags/configmap--secret/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Config</title>
+      <link>https://moonlightmazed.github.io/posts/kubernetes/config/</link>
+      <pubDate>Sat, 03 Oct 2020 09:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/kubernetes/config/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

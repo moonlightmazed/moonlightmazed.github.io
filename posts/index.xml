@@ -6,29 +6,8 @@
     <description>Recent content in Posts on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Wed, 19 Mar 2025 15:33:05 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 14 Mar 2024 03:03:52 +0800</lastBuildDate>
     <atom:link href="https://moonlightmazed.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Pv</title>
-      <link>https://moonlightmazed.github.io/posts/kubernetes/pv/</link>
-      <pubDate>Wed, 19 Mar 2025 15:33:05 +0800</pubDate>
-      <guid>https://moonlightmazed.github.io/posts/kubernetes/pv/</guid>
-      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>HPA</title>
-      <link>https://moonlightmazed.github.io/posts/kubernetes/hpa/</link>
-      <pubDate>Wed, 19 Mar 2025 15:32:19 +0800</pubDate>
-      <guid>https://moonlightmazed.github.io/posts/kubernetes/hpa/</guid>
-      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Config</title>
-      <link>https://moonlightmazed.github.io/posts/kubernetes/config/</link>
-      <pubDate>Wed, 19 Mar 2025 15:31:26 +0800</pubDate>
-      <guid>https://moonlightmazed.github.io/posts/kubernetes/config/</guid>
-      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
-    </item>
     <item>
       <title>Tekton</title>
       <link>https://moonlightmazed.github.io/posts/cicd/tekton/</link>
@@ -51,11 +30,32 @@
       <description>&lt;h2 id=&#34;集群信息&#34;&gt;&lt;strong&gt;集群信息：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;显示 Kubernetes 版本：&lt;code&gt;kubectl version&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;显示集群信息：&lt;code&gt;kubectl cluster-info&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;列出集群中的所有节点：&lt;code&gt;kubectl get nodes&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个具体的节点详情：&lt;code&gt;kubectl describe node &amp;lt;node-name&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;列出所有命名空间：&lt;code&gt;kubectl get namespaces&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;列出所有命名空间中的所有 pod：&lt;code&gt;kubectl get pods --all-namespaces&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;pod-诊断&#34;&gt;&lt;strong&gt;Pod 诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出特定命名空间中的 pod：&lt;code&gt;kubectl get pods -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个 Pod 详情：&lt;code&gt;kubectl describe pod &amp;lt;pod-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看 Pod 日志：&lt;code&gt;kubectl logs &amp;lt;pod-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;尾部 Pod 日志：&lt;code&gt;kubectl logs -f &amp;lt;pod-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;在 pod 中执行命令：&lt;code&gt;kubectl exec -it &amp;lt;pod-name&amp;gt; -n &amp;lt;namespace&amp;gt; -- &amp;lt;command&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;pod-健康检查&#34;&gt;&lt;strong&gt;Pod 健康检查：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;检查 Pod 准备情况：&lt;code&gt;kubectl get pods &amp;lt;pod-name&amp;gt; -n &amp;lt;namespace&amp;gt; -o jsonpath=&#39;{.status.conditions[?(@.type==&amp;quot;Ready&amp;quot;)].status}&#39;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;检查 Pod 事件：&lt;code&gt;kubectl get events -n &amp;lt;namespace&amp;gt; --field-selector involvedObject.name=&amp;lt;pod-name&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;service诊断&#34;&gt;&lt;strong&gt;Service诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出命名空间中的所有服务：&lt;code&gt;kubectl get svc -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个服务详情：&lt;code&gt;kubectl describe svc &amp;lt;service-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;deployment诊断&#34;&gt;&lt;strong&gt;Deployment诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出命名空间中的所有Deployment：&lt;code&gt;kubectl get deployments -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个Deployment详情：&lt;code&gt;kubectl describe deployment &amp;lt;deployment-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看滚动发布状态：&lt;code&gt;kubectl rollout status deployment/&amp;lt;deployment-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看滚动发布历史记录：&lt;code&gt;kubectl rollout history deployment/&amp;lt;deployment-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;statefulset诊断&#34;&gt;&lt;strong&gt;StatefulSet诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出命名空间中的所有 StatefulSet：&lt;code&gt;kubectl get statefulsets -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个 StatefulSet详情：&lt;code&gt;kubectl describe statefulset &amp;lt;statefulset-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;configmap-和secret诊断&#34;&gt;&lt;strong&gt;ConfigMap 和Secret诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出命名空间中的 ConfigMap：&lt;code&gt;kubectl get configmaps -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个ConfigMap详情：&lt;code&gt;kubectl describe configmap &amp;lt;configmap-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;列出命名空间中的 Secret：&lt;code&gt;kubectl get secrets -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个Secret详情：&lt;code&gt;kubectl describe secret &amp;lt;secret-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;命名空间诊断&#34;&gt;&lt;strong&gt;命名空间诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;查看一个命名空间详情：&lt;code&gt;kubectl describe namespace &amp;lt;namespace-name&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;资源使用情况&#34;&gt;&lt;strong&gt;资源使用情况：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;检查 pod 的资源使用情况：&lt;code&gt;kubectl top pod &amp;lt;pod-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;检查节点资源使用情况：&lt;code&gt;kubectl top nodes&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;网络诊断&#34;&gt;&lt;strong&gt;网络诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;显示命名空间中 Pod 的 IP 地址：&lt;code&gt;kubectl get pods -n &amp;lt;namespace&amp;gt; -o custom-columns=POD:metadata.name,IP:status.podIP --no-headers&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;列出命名空间中的所有网络策略：&lt;code&gt;kubectl get networkpolicies -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个网络策略详情：&lt;code&gt;kubectl describe networkpolicy &amp;lt;network-policy-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;持久卷-pv-和持久卷声明-pvc-诊断&#34;&gt;&lt;strong&gt;持久卷 (PV) 和持久卷声明 (PVC) 诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出PV：&lt;code&gt;kubectl get pv&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个PV详情：&lt;code&gt;kubectl describe pv &amp;lt;pv-name&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;列出命名空间中的 PVC：&lt;code&gt;kubectl get pvc -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看PVC详情：&lt;code&gt;kubectl describe pvc &amp;lt;pvc-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;节点诊断&#34;&gt;&lt;strong&gt;节点诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;获取特定节点上运行的 Pod 列表：&lt;code&gt;kubectl get pods --field-selector spec.nodeName=&amp;lt;node-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;资源配额和限制&#34;&gt;&lt;strong&gt;资源配额和限制：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出命名空间中的资源配额：&lt;code&gt;kubectl get resourcequotas -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看一个资源配额详情：&lt;code&gt;kubectl describe resourcequota &amp;lt;resource-quota-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;h2 id=&#34;自定义资源定义-crd-诊断&#34;&gt;&lt;strong&gt;自定义资源定义 (CRD) 诊断：&lt;/strong&gt;&lt;/h2&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列出命名空间中的自定义资源：&lt;code&gt;kubectl get &amp;lt;custom-resource-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;查看自定义资源详情：&lt;code&gt;kubectl describe &amp;lt;custom-resource-name&amp;gt; &amp;lt;custom-resource-instance-name&amp;gt; -n &amp;lt;namespace&amp;gt;&lt;/code&gt;&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;使用这些命令时，请记住将&lt;code&gt;&amp;lt;namespace&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;pod-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;service-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;deployment-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;statefulset-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;configmap-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;secret-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;namespace-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;pv-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;pvc-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;node-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;network-policy-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;resource-quota-name&amp;gt;&lt;/code&gt;, &lt;code&gt;&amp;lt;custom-resource-name&amp;gt;&lt;/code&gt;, 和替换为你的特定值。&#xA;&lt;code&gt;&amp;lt;custom-resource-instance-name&amp;gt;&lt;/code&gt;这些命令应该可以帮助你诊断 Kubernetes 集群以及在其中运行的应用程序。&lt;/p&gt;</description>
     </item>
     <item>
+      <title>PV</title>
+      <link>https://moonlightmazed.github.io/posts/kubernetes/pv/</link>
+      <pubDate>Sat, 03 Oct 2020 21:33:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/kubernetes/pv/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>HPA</title>
+      <link>https://moonlightmazed.github.io/posts/kubernetes/hpa/</link>
+      <pubDate>Sat, 03 Oct 2020 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/kubernetes/hpa/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Service</title>
       <link>https://moonlightmazed.github.io/posts/kubernetes/service/</link>
       <pubDate>Sat, 03 Oct 2020 09:42:31 +0800</pubDate>
       <guid>https://moonlightmazed.github.io/posts/kubernetes/service/</guid>
       <description>&lt;h2 id=&#34;一service-概念&#34;&gt;一、Service 概念&lt;/h2&gt;&#xA;&lt;p&gt;Kubernetes &lt;code&gt;Service&lt;/code&gt;定义了这样一种抽象：逻辑上的一组 &lt;code&gt;Pod&lt;/code&gt;，一种可以访问它们的策略 —— 通常被称为微服务。这一组 &lt;code&gt;Pod &lt;/code&gt;能够被 &lt;code&gt;Service&lt;/code&gt; 访问到，通常是通过 &lt;code&gt;selector&lt;/code&gt;实现的。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Config</title>
+      <link>https://moonlightmazed.github.io/posts/kubernetes/config/</link>
+      <pubDate>Sat, 03 Oct 2020 09:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/kubernetes/config/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Controller</title>

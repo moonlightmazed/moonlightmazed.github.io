@@ -6,13 +6,20 @@
     <description>Recent content in Tags on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Sun, 16 Mar 2025 02:41:42 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 19 Mar 2025 15:33:05 +0800</lastBuildDate>
     <atom:link href="https://moonlightmazed.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>K8s</title>
-      <link>https://moonlightmazed.github.io/tags/k8s/</link>
-      <pubDate>Sun, 16 Mar 2025 02:41:42 +0800</pubDate>
-      <guid>https://moonlightmazed.github.io/tags/k8s/</guid>
+      <title>Tag1</title>
+      <link>https://moonlightmazed.github.io/tags/tag1/</link>
+      <pubDate>Wed, 19 Mar 2025 15:33:05 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/tag1/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag2</title>
+      <link>https://moonlightmazed.github.io/tags/tag2/</link>
+      <pubDate>Wed, 19 Mar 2025 15:33:05 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/tag2/</guid>
       <description></description>
     </item>
     <item>
@@ -41,6 +48,34 @@
       <link>https://moonlightmazed.github.io/tags/%E4%BB%93%E5%BA%93/</link>
       <pubDate>Sat, 13 Jan 2024 18:48:49 +0800</pubDate>
       <guid>https://moonlightmazed.github.io/tags/%E4%BB%93%E5%BA%93/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Command</title>
+      <link>https://moonlightmazed.github.io/tags/command/</link>
+      <pubDate>Mon, 02 Nov 2020 12:13:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/command/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Service</title>
+      <link>https://moonlightmazed.github.io/tags/service/</link>
+      <pubDate>Sat, 03 Oct 2020 09:42:31 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/service/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Controller</title>
+      <link>https://moonlightmazed.github.io/tags/controller/</link>
+      <pubDate>Fri, 02 Oct 2020 22:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/controller/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Pod</title>
+      <link>https://moonlightmazed.github.io/tags/pod/</link>
+      <pubDate>Fri, 02 Oct 2020 17:43:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/pod/</guid>
       <description></description>
     </item>
   </channel>

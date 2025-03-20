@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Controller on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/controller/</link>
+    <description>Recent content in Controller on MoonLightMaze’s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Fri, 02 Oct 2020 22:11:02 +0800</lastBuildDate>
+    <atom:link href="https://moonlightmazed.github.io/tags/controller/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Controller</title>
+      <link>https://moonlightmazed.github.io/posts/kubernetes/controller/</link>
+      <pubDate>Fri, 02 Oct 2020 22:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/kubernetes/controller/</guid>
+      <description>&lt;h2 id=&#34;一controller-概述&#34;&gt;一、Controller 概述&lt;/h2&gt;&#xA;&lt;p&gt;在 Kubernetes 中，控制器（Controller）是一个核心概念，它是一种控制循环，通过持续监控 Kubernetes API 服务器中的对象状态，并根据期望状态与实际状态的差异采取相应的操作，以确保系统始终处于用户所期望的状态。控制器不断地比较期望状态和实际状态，然后对资源进行创建、更新或删除操作，使实际状态逐渐趋近于期望状态。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

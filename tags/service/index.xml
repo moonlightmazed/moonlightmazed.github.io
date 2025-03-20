@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Service on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/service/</link>
+    <description>Recent content in Service on MoonLightMaze’s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Sat, 03 Oct 2020 09:42:31 +0800</lastBuildDate>
+    <atom:link href="https://moonlightmazed.github.io/tags/service/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Service</title>
+      <link>https://moonlightmazed.github.io/posts/kubernetes/service/</link>
+      <pubDate>Sat, 03 Oct 2020 09:42:31 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/kubernetes/service/</guid>
+      <description>&lt;h2 id=&#34;一service-概念&#34;&gt;一、Service 概念&lt;/h2&gt;&#xA;&lt;p&gt;Kubernetes &lt;code&gt;Service&lt;/code&gt;定义了这样一种抽象：逻辑上的一组 &lt;code&gt;Pod&lt;/code&gt;，一种可以访问它们的策略 —— 通常被称为微服务。这一组 &lt;code&gt;Pod &lt;/code&gt;能够被 &lt;code&gt;Service&lt;/code&gt; 访问到，通常是通过 &lt;code&gt;selector&lt;/code&gt;实现的。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -488,9 +488,19 @@ x-data="{
 
 
 
+
+
+
+
+
+
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js" integrity="sha256-42IbU8t3tOwwbexB7ZVRHm3YDRf65aBPPjRtIUufj5I=" crossorigin="anonymous"></script>
 <script>
-  var fuseData = [{"author":"Author Name","avatar":null,"categories":["Kubernete"],"description":"\u003ch2 id=\"开始\"\u003e开始\u003c/h2\u003e\n\u003ch3 id=\"1\"\u003e1\u003c/h3\u003e\n\u003ch2 id=\"结束\"\u003e结束\u003c/h2\u003e\n\u003ch3 id=\"2\"\u003e2\u003c/h3\u003e\n\u003ch3 id=\"3\"\u003e3\u003c/h3\u003e","readingTime":1,"tags":["k8s"],"title":"Pod","url":"/posts/kubernetes/pod/"},{"author":"MoonLightMaze","avatar":null,"categories":["CICD"],"description":"Tekton 是一个功能强大且灵活的开源框架，用于创建 CI/CD 系统，允许开发人员跨云提供商和本地系统进行构建、测试和部署","readingTime":3,"tags":["CI","Tekton"],"title":"Tekton","url":"/posts/cicd/tekton/"},{"author":"MoonlightMaze","avatar":null,"categories":["CICD"],"description":"Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。","readingTime":2,"tags":["仓库","Harbor"],"title":"Harbor","url":"/posts/cicd/harbor/"},{"author":"MoonlightMaze","avatar":null,"categories":["Kubernete"],"description":"Kubernetes（简称k8s）是Google在2014年6月开源的一个容器集群管理系统，使用Go语言开发，用于管理云平台中多个主机上的容器化的应用。","readingTime":19,"tags":["k8s"],"title":"K8s概述","url":"/posts/kubernetes/k8s/"}];
+  var fuseData = [{"author":"Author Name","avatar":null,"categories":["category1"],"description":"\u003cp\u003eCut out summary from your post content here.\u003c/p\u003e","readingTime":1,"tags":["tag1","tag2"],"title":"Pv","url":"/posts/kubernetes/pv/"},{"author":"Author Name","avatar":null,"categories":["category1"],"description":"\u003cp\u003eCut out summary from your post content here.\u003c/p\u003e","readingTime":1,"tags":["tag1","tag2"],"title":"HPA","url":"/posts/kubernetes/hpa/"},{"author":"Author Name","avatar":null,"categories":["category1"],"description":"\u003cp\u003eCut out summary from your post content here.\u003c/p\u003e","readingTime":1,"tags":["tag1","tag2"],"title":"Config","url":"/posts/kubernetes/config/"},{"author":"MoonLightMaze","avatar":null,"categories":["CICD"],"description":"Tekton 是一个功能强大且灵活的开源框架，用于创建 CI/CD 系统，允许开发人员跨云提供商和本地系统进行构建、测试和部署","readingTime":3,"tags":["CI","Tekton"],"title":"Tekton","url":"/posts/cicd/tekton/"},{"author":"MoonlightMaze","avatar":null,"categories":["CICD"],"description":"Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。","readingTime":2,"tags":["仓库","Harbor"],"title":"Harbor","url":"/posts/cicd/harbor/"},{"author":"MoonlightMaze","avatar":null,"categories":["Kubernete"],"description":"Kubernete 命令大全","readingTime":7,"tags":["Command"],"title":"Command","url":"/posts/kubernetes/command/"},{"author":"MoonlightMaze","avatar":null,"categories":["Kubernete"],"description":"Kubernetes `Service`定义了这样一种抽象：逻辑上的一组 `Pod`，一种可以访问它们的策略 —— 通常被称为微服务。这一组 `Pod `能够被 `Service` 访问到，通常是通过 `selector`实现的。","readingTime":6,"tags":["Service"],"title":"Service","url":"/posts/kubernetes/service/"},{"author":"MoonlightMaze","avatar":null,"categories":["Kubernete"],"description":"在 Kubernetes 中，控制器（Controller）是一个核心概念，它是一种控制循环，通过持续监控 Kubernetes API 服务器中的对象状态，并根据期望状态与实际状态的差异采取相应的操作，以确保系统始终处于用户所期望的状态。控制器不断地比较期望状态和实际状态，然后对资源进行创建、更新或删除操作，使实际状态逐渐趋近于期望状态。","readingTime":10,"tags":["Controller"],"title":"Controller","url":"/posts/kubernetes/controller/"},{"author":"MoonlightMaze","avatar":null,"categories":["Kubernete"],"description":"在 Kubernetes（K8s）里，Pod 属于最基础且最小的可部署单元。它代表一组紧密关联的容器集合，这些容器会共享存储、网络以及运行环境。可以把 Pod 当作是运行特定应用程序的一个“逻辑主机”。","readingTime":5,"tags":["Pod"],"title":"Pod","url":"/posts/kubernetes/pod/"}];
   var fuseOptions = {
     keys: [
       "title",

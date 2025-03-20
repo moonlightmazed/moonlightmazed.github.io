@@ -6,13 +6,13 @@
     <description>Recent content in Categories on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Sun, 16 Mar 2025 02:41:42 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 19 Mar 2025 15:33:05 +0800</lastBuildDate>
     <atom:link href="https://moonlightmazed.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Kubernete</title>
-      <link>https://moonlightmazed.github.io/categories/kubernete/</link>
-      <pubDate>Sun, 16 Mar 2025 02:41:42 +0800</pubDate>
-      <guid>https://moonlightmazed.github.io/categories/kubernete/</guid>
+      <title>Category1</title>
+      <link>https://moonlightmazed.github.io/categories/category1/</link>
+      <pubDate>Wed, 19 Mar 2025 15:33:05 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/categories/category1/</guid>
       <description></description>
     </item>
     <item>
@@ -20,6 +20,13 @@
       <link>https://moonlightmazed.github.io/categories/cicd/</link>
       <pubDate>Thu, 14 Mar 2024 03:03:52 +0800</pubDate>
       <guid>https://moonlightmazed.github.io/categories/cicd/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Kubernete</title>
+      <link>https://moonlightmazed.github.io/categories/kubernete/</link>
+      <pubDate>Mon, 02 Nov 2020 12:13:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/categories/kubernete/</guid>
       <description></description>
     </item>
   </channel>

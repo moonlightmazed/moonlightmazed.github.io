@@ -10,7 +10,7 @@
 
     
   
-    <link href="/favicon.ico" rel="icon" type="image/x-icon" />
+    <link href="/img/favicon.ico" rel="icon" type="image/x-icon" />
   
 
 
@@ -345,7 +345,7 @@
   <meta itemprop="description" content="Kubernete 命令大全">
   <meta itemprop="datePublished" content="2020-11-02T12:13:02+08:00">
   <meta itemprop="dateModified" content="2020-11-02T12:13:02+08:00">
-  <meta itemprop="wordCount" content="3084">
+  <meta itemprop="wordCount" content="2940">
   <meta itemprop="image" content="https://moonlightmazed.github.io/posts/kubernetes/command/image.png">
   <meta itemprop="keywords" content="Command">
 
@@ -356,7 +356,7 @@
           <span data-format="luxon">2020-11-02T12:13:02&#43;08:00</span>
           
 
-          | <span>7分钟阅读</span>
+          | <span>6分钟阅读</span>
 
           
           | <span>更新于
@@ -423,29 +423,29 @@
 <li>检查 Pod 准备情况：<code>kubectl get pods &lt;pod-name&gt; -n &lt;namespace&gt; -o jsonpath='{.status.conditions[?(@.type==&quot;Ready&quot;)].status}'</code></li>
 <li>检查 Pod 事件：<code>kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt;pod-name&gt;</code></li>
 </ol>
-<h2 id="service诊断"><strong>Service诊断：</strong></h2>
+<h2 id="service-诊断"><strong>Service 诊断：</strong></h2>
 <ol>
 <li>列出命名空间中的所有服务：<code>kubectl get svc -n &lt;namespace&gt;</code></li>
 <li>查看一个服务详情：<code>kubectl describe svc &lt;service-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
-<h2 id="deployment诊断"><strong>Deployment诊断：</strong></h2>
+<h2 id="deployment-诊断"><strong>Deployment 诊断：</strong></h2>
 <ol>
-<li>列出命名空间中的所有Deployment：<code>kubectl get deployments -n &lt;namespace&gt;</code></li>
-<li>查看一个Deployment详情：<code>kubectl describe deployment &lt;deployment-name&gt; -n &lt;namespace&gt;</code></li>
+<li>列出命名空间中的所有 Deployment：<code>kubectl get deployments -n &lt;namespace&gt;</code></li>
+<li>查看一个 Deployment 详情：<code>kubectl describe deployment &lt;deployment-name&gt; -n &lt;namespace&gt;</code></li>
 <li>查看滚动发布状态：<code>kubectl rollout status deployment/&lt;deployment-name&gt; -n &lt;namespace&gt;</code></li>
 <li>查看滚动发布历史记录：<code>kubectl rollout history deployment/&lt;deployment-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
-<h2 id="statefulset诊断"><strong>StatefulSet诊断：</strong></h2>
+<h2 id="statefulset-诊断"><strong>StatefulSet 诊断：</strong></h2>
 <ol>
 <li>列出命名空间中的所有 StatefulSet：<code>kubectl get statefulsets -n &lt;namespace&gt;</code></li>
-<li>查看一个 StatefulSet详情：<code>kubectl describe statefulset &lt;statefulset-name&gt; -n &lt;namespace&gt;</code></li>
+<li>查看一个 StatefulSet 详情：<code>kubectl describe statefulset &lt;statefulset-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
-<h2 id="configmap-和secret诊断"><strong>ConfigMap 和Secret诊断：</strong></h2>
+<h2 id="configmap-和-secret-诊断"><strong>ConfigMap 和 Secret 诊断：</strong></h2>
 <ol>
 <li>列出命名空间中的 ConfigMap：<code>kubectl get configmaps -n &lt;namespace&gt;</code></li>
-<li>查看一个ConfigMap详情：<code>kubectl describe configmap &lt;configmap-name&gt; -n &lt;namespace&gt;</code></li>
+<li>查看一个 ConfigMap 详情：<code>kubectl describe configmap &lt;configmap-name&gt; -n &lt;namespace&gt;</code></li>
 <li>列出命名空间中的 Secret：<code>kubectl get secrets -n &lt;namespace&gt;</code></li>
-<li>查看一个Secret详情：<code>kubectl describe secret &lt;secret-name&gt; -n &lt;namespace&gt;</code></li>
+<li>查看一个 Secret 详情：<code>kubectl describe secret &lt;secret-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
 <h2 id="命名空间诊断"><strong>命名空间诊断：</strong></h2>
 <ol>
@@ -464,10 +464,10 @@
 </ol>
 <h2 id="持久卷-pv-和持久卷声明-pvc-诊断"><strong>持久卷 (PV) 和持久卷声明 (PVC) 诊断：</strong></h2>
 <ol>
-<li>列出PV：<code>kubectl get pv</code></li>
-<li>查看一个PV详情：<code>kubectl describe pv &lt;pv-name&gt;</code></li>
+<li>列出 PV：<code>kubectl get pv</code></li>
+<li>查看一个 PV 详情：<code>kubectl describe pv &lt;pv-name&gt;</code></li>
 <li>列出命名空间中的 PVC：<code>kubectl get pvc -n &lt;namespace&gt;</code></li>
-<li>查看PVC详情：<code>kubectl describe pvc &lt;pvc-name&gt; -n &lt;namespace&gt;</code></li>
+<li>查看 PVC 详情：<code>kubectl describe pvc &lt;pvc-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
 <h2 id="节点诊断"><strong>节点诊断：</strong></h2>
 <ol>
@@ -487,8 +487,8 @@
 <code>&lt;custom-resource-instance-name&gt;</code>这些命令应该可以帮助你诊断 Kubernetes 集群以及在其中运行的应用程序。</p>
 <h2 id="资源伸缩和自动伸缩"><strong>资源伸缩和自动伸缩</strong></h2>
 <ol>
-<li>Deployment伸缩：<code>kubectl scale deployment &lt;deployment-name&gt; --replicas=&lt;replica-count&gt; -n &lt;namespace&gt;</code></li>
-<li>设置Deployment的自动伸缩：<code>kubectl autoscale deployment &lt;deployment-name&gt; --min=&lt;min-pods&gt; --max=&lt;max-pods&gt; --cpu-percent=&lt;cpu-percent&gt; -n &lt;namespace&gt;</code></li>
+<li>Deployment 伸缩：<code>kubectl scale deployment &lt;deployment-name&gt; --replicas=&lt;replica-count&gt; -n &lt;namespace&gt;</code></li>
+<li>设置 Deployment 的自动伸缩：<code>kubectl autoscale deployment &lt;deployment-name&gt; --min=&lt;min-pods&gt; --max=&lt;max-pods&gt; --cpu-percent=&lt;cpu-percent&gt; -n &lt;namespace&gt;</code></li>
 <li>检查水平伸缩器状态：<code>kubectl get hpa -n &lt;namespace&gt;</code></li>
 </ol>
 <h2 id="作业和-cronjob-诊断"><strong>作业和 CronJob 诊断：</strong></h2>
@@ -501,13 +501,13 @@
 <h2 id="容量诊断"><strong>容量诊断：</strong></h2>
 <ol>
 <li>列出按容量排序的持久卷 (PV)：<code>kubectl get pv --sort-by=.spec.capacity.storage</code></li>
-<li>查看PV回收策略：<code>kubectl get pv &lt;pv-name&gt; -o=jsonpath='{.spec.persistentVolumeReclaimPolicy}'</code></li>
+<li>查看 PV 回收策略：<code>kubectl get pv &lt;pv-name&gt; -o=jsonpath='{.spec.persistentVolumeReclaimPolicy}'</code></li>
 <li>列出所有存储类别：<code>kubectl get storageclasses</code></li>
 </ol>
-<h2 id="ingress和服务网格诊断"><strong>Ingress和服务网格诊断：</strong></h2>
+<h2 id="ingress-和服务网格诊断"><strong>Ingress 和服务网格诊断：</strong></h2>
 <ol>
-<li>列出命名空间中的所有Ingress：<code>kubectl get ingress -n &lt;namespace&gt;</code></li>
-<li>查看一个Ingress详情：<code>kubectl describe ingress &lt;ingress-name&gt; -n &lt;namespace&gt;</code></li>
+<li>列出命名空间中的所有 Ingress：<code>kubectl get ingress -n &lt;namespace&gt;</code></li>
+<li>查看一个 Ingress 详情：<code>kubectl describe ingress &lt;ingress-name&gt; -n &lt;namespace&gt;</code></li>
 <li>列出命名空间中的所有 VirtualServices (Istio)：<code>kubectl get virtualservices -n &lt;namespace&gt;</code></li>
 <li>查看一个 VirtualService (Istio)详情：<code>kubectl describe virtualservice &lt;virtualservice-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
@@ -569,11 +569,11 @@
 <ol>
 <li>获取 Pod 的 CPU 和内存使用情况：<code>kubectl top pod -n &lt;namespace&gt;</code></li>
 </ol>
-<h2 id="kuelet诊断"><strong>kuelet诊断：</strong></h2>
+<h2 id="kuelet-诊断"><strong>kuelet 诊断：</strong></h2>
 <ol>
-<li>查看节点上的kubelet日志：<code>kubectl logs -n kube-system kubelet-&lt;node-name&gt;</code></li>
+<li>查看节点上的 kubelet 日志：<code>kubectl logs -n kube-system kubelet-&lt;node-name&gt;</code></li>
 </ol>
-<h2 id="使用telepresence-进行高级调试"><strong>使用Telepresence 进行高级调试：</strong></h2>
+<h2 id="使用-telepresence-进行高级调试"><strong>使用 Telepresence 进行高级调试：</strong></h2>
 <ol>
 <li>使用 Telepresence 调试 pod：<code>telepresence --namespace &lt;namespace&gt; --swap-deployment &lt;pod-name&gt;</code></li>
 </ol>
@@ -589,7 +589,7 @@
 <h2 id="pod-中断预算-pdb-诊断"><strong>Pod 中断预算 (PDB) 诊断：</strong></h2>
 <ol>
 <li>列出命名空间中的所有 PDB：<code>kubectl get pdb -n &lt;namespace&gt;</code></li>
-<li>查看一个PDB详情：<code>kubectl describe pdb &lt;pdb-name&gt; -n &lt;namespace&gt;</code></li>
+<li>查看一个 PDB 详情：<code>kubectl describe pdb &lt;pdb-name&gt; -n &lt;namespace&gt;</code></li>
 </ol>
 <h2 id="资源锁诊断如果使用资源锁"><strong>资源锁诊断（如果使用资源锁）：</strong></h2>
 <ol>
@@ -602,7 +602,7 @@
 </ol>
 <h2 id="自定义指标prometheusgrafana"><strong>自定义指标（Prometheus、Grafana）：</strong></h2>
 <ol>
-<li>查询Prometheus指标：用于<code>kubectl port-forward</code>访问Prometheus和Grafana服务来查询自定义指标。</li>
+<li>查询 Prometheus 指标：用于<code>kubectl port-forward</code>访问 Prometheus 和 Grafana 服务来查询自定义指标。</li>
 </ol>
 <h2 id="pod-优先级和抢占"><strong>Pod 优先级和抢占：</strong></h2>
 <ol>
@@ -689,10 +689,10 @@
     <li><a href="#集群信息"><strong>集群信息：</strong></a></li>
     <li><a href="#pod-诊断"><strong>Pod 诊断：</strong></a></li>
     <li><a href="#pod-健康检查"><strong>Pod 健康检查：</strong></a></li>
-    <li><a href="#service诊断"><strong>Service诊断：</strong></a></li>
-    <li><a href="#deployment诊断"><strong>Deployment诊断：</strong></a></li>
-    <li><a href="#statefulset诊断"><strong>StatefulSet诊断：</strong></a></li>
-    <li><a href="#configmap-和secret诊断"><strong>ConfigMap 和Secret诊断：</strong></a></li>
+    <li><a href="#service-诊断"><strong>Service 诊断：</strong></a></li>
+    <li><a href="#deployment-诊断"><strong>Deployment 诊断：</strong></a></li>
+    <li><a href="#statefulset-诊断"><strong>StatefulSet 诊断：</strong></a></li>
+    <li><a href="#configmap-和-secret-诊断"><strong>ConfigMap 和 Secret 诊断：</strong></a></li>
     <li><a href="#命名空间诊断"><strong>命名空间诊断：</strong></a></li>
     <li><a href="#资源使用情况"><strong>资源使用情况：</strong></a></li>
     <li><a href="#网络诊断"><strong>网络诊断：</strong></a></li>
@@ -703,7 +703,7 @@
     <li><a href="#资源伸缩和自动伸缩"><strong>资源伸缩和自动伸缩</strong></a></li>
     <li><a href="#作业和-cronjob-诊断"><strong>作业和 CronJob 诊断：</strong></a></li>
     <li><a href="#容量诊断"><strong>容量诊断：</strong></a></li>
-    <li><a href="#ingress和服务网格诊断"><strong>Ingress和服务网格诊断：</strong></a></li>
+    <li><a href="#ingress-和服务网格诊断"><strong>Ingress 和服务网格诊断：</strong></a></li>
     <li><a href="#pod-网络故障排除"><strong>Pod 网络故障排除：</strong></a></li>
     <li><a href="#配置和资源验证"><strong>配置和资源验证：</strong></a></li>
     <li><a href="#rbac-和安全性"><strong>RBAC 和安全性：</strong></a></li>
@@ -716,8 +716,8 @@
     <li><a href="#节点故障排除"><strong>节点故障排除：</strong></a></li>
     <li><a href="#临时容器kubernetes-118"><strong>临时容器（Kubernetes 1.18+）：</strong></a></li>
     <li><a href="#资源指标需要指标服务器"><strong>资源指标（需要指标服务器）：</strong></a></li>
-    <li><a href="#kuelet诊断"><strong>kuelet诊断：</strong></a></li>
-    <li><a href="#使用telepresence-进行高级调试"><strong>使用Telepresence 进行高级调试：</strong></a></li>
+    <li><a href="#kuelet-诊断"><strong>kuelet 诊断：</strong></a></li>
+    <li><a href="#使用-telepresence-进行高级调试"><strong>使用 Telepresence 进行高级调试：</strong></a></li>
     <li><a href="#kubeconfig-和上下文"><strong>Kubeconfig 和上下文：</strong></a></li>
     <li><a href="#pod-安全标准podsecurity-准入控制器"><strong>Pod 安全标准（PodSecurity 准入控制器））：</strong></a></li>
     <li><a href="#pod-中断预算-pdb-诊断"><strong>Pod 中断预算 (PDB) 诊断：</strong></a></li>

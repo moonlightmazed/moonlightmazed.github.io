@@ -348,7 +348,7 @@
   <meta itemprop="description" content="Harbor 是由 VMware 开源的一款云原生制品仓库，Harbor 的核心功能是存储和管理 Artifact。">
   <meta itemprop="datePublished" content="2024-01-13T18:48:49+08:00">
   <meta itemprop="dateModified" content="2024-01-13T18:48:49+08:00">
-  <meta itemprop="wordCount" content="545">
+  <meta itemprop="wordCount" content="586">
   <meta itemprop="image" content="https://moonlightmazed.github.io/posts/cicd/harbor/image.png">
   <meta itemprop="keywords" content="仓库,Harbor">
 
@@ -404,7 +404,24 @@
       <section id="dream-single-post-content" itemprop="articleBody" class="w-full" style="margin-top: 40px !important;">
         
 
-        <h2 id="docker-安装">Docker 安装</h2>
+        <h2 id="更换国内源">更换国内源</h2>
+<pre tabindex="0"><code># 阿里
+sed -e &#39;s|^#mirrorlist=|mirrorlist=|g&#39; \
+    -e &#39;s|^baseurl=https://mirrors.aliyun.com/rockylinux|#baseurl=http://dl.rockylinux.org/$contentdir|g&#39; \
+    -i.bak \
+    /etc/yum.repos.d/rocky*.repo
+
+# 中科大
+sed -e &#39;s|^mirrorlist=|#mirrorlist=|g&#39; \
+    -e &#39;s|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g&#39; \
+    -i.bak \
+    /etc/yum.repos.d/rocky-extras.repo \
+    /etc/yum.repos.d/rocky.repo
+
+
+# 生成缓存
+dnf makecache
+</code></pre><h2 id="docker-安装">Docker 安装</h2>
 <h3 id="更新系统与安装依赖">更新系统与安装依赖</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo dnf update -y
 </span></span><span style="display:flex;"><span>sudo dnf install -y yum-utils device-mapper-persistent-data lvm2
@@ -550,6 +567,7 @@
     
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#更换国内源">更换国内源</a></li>
     <li><a href="#docker-安装">Docker 安装</a>
       <ul>
         <li><a href="#更新系统与安装依赖">更新系统与安装依赖</a></li>

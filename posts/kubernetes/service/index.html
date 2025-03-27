@@ -347,7 +347,7 @@
   <meta itemprop="description" content="Kubernetes `Service`定义了这样一种抽象：逻辑上的一组 `Pod`，一种可以访问它们的策略 —— 通常被称为微服务。这一组 `Pod `能够被 `Service` 访问到，通常是通过 `selector`实现的。">
   <meta itemprop="datePublished" content="2020-10-03T09:42:31+08:00">
   <meta itemprop="dateModified" content="2020-10-03T09:42:31+08:00">
-  <meta itemprop="wordCount" content="2517">
+  <meta itemprop="wordCount" content="2670">
   <meta itemprop="image" content="https://moonlightmazed.github.io/posts/kubernetes/service/image.png">
   <meta itemprop="keywords" content="Service">
 
@@ -467,8 +467,63 @@
 </ul>
 <p>需要注意的是：Service 能够将一个接收 port 映射到任意的 targetPort。默认情况下，targetPort 将被设置为与 port 字段相同的值。</p>
 <p>Service 域名格式：<code>$(service name).$(namespace).svc.cluster.local</code>，其中 cluster.local 为指定的集群的域名</p>
-<h3 id="1-clusterip">1. ClusterIP</h3>
-
+<h3 id="image-20250327161622306"><img src="index.assets/image-20250327161622306.png" alt="image-20250327161622306"></h3>
+<h2 id="四service组件调用流程">四、Service组件调用流程</h2>
+<p><img src="index.assets/image-20250327161721649.png" alt="image-20250327161721649"></p>
+<h2 id="五cluster">五、Cluster</h2>
+<h3 id="1结构图">1.结构图</h3>
+<p><img src="index.assets/image-20250327163354195.png" alt="image-20250327163354195"></p>
+<h3 id="2资源清单">2.资源清单</h3>
+<pre tabindex="0"><code class="language-yanl" data-lang="yanl">apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-nodeport
+spec:
+  type: clusterip
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80 
+</code></pre><h2 id="六nodeport">六、NodePort</h2>
+<h3 id="1结构-图">1.结构 图</h3>
+<p><img src="index.assets/image-20250327215614024.png" alt="image-20250327215614024"></p>
+<h3 id="2资源清单-1">2.资源清单</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-deploy</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">matchLabels</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">template</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.22</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">nginx-nodeport</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">type</span>: <span style="color:#ae81ff">NodePort</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">selector</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">nginx</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">port</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">nodePort</span>: <span style="color:#ae81ff">30080</span>  <span style="color:#75715e"># 可以指定一个端口号，如果不指定，会自动分配一个</span>
+</span></span></code></pre></div>
 
         
       </section>
@@ -477,11 +532,11 @@
       <div class="divider w-full"></div>
       <div class="flex flex-col md:flex-row justify-between gap-4 py-4 w-full">
         
-        <a class="group btn btn-outline" href="/posts/kubernetes/hpa/" title="HPA">
+        <a class="group btn btn-outline" href="/posts/kubernetes/kind/" title="Kind">
           <ion-icon name="chevron-back"></ion-icon>
           <div class="inline-flex flex-col items-start">
             <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
-            <span class="max-w-48 truncate">HPA</span>
+            <span class="max-w-48 truncate">Kind</span>
           </div>
         </a>
         
@@ -517,7 +572,20 @@
     </li>
     <li><a href="#三service-类型">三、Service 类型</a>
       <ul>
-        <li><a href="#1-clusterip">1. ClusterIP</a></li>
+        <li><a href="#image-20250327161622306"><img src="index.assets/image-20250327161622306.png" alt="image-20250327161622306"></a></li>
+      </ul>
+    </li>
+    <li><a href="#四service组件调用流程">四、Service组件调用流程</a></li>
+    <li><a href="#五cluster">五、Cluster</a>
+      <ul>
+        <li><a href="#1结构图">1.结构图</a></li>
+        <li><a href="#2资源清单">2.资源清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#六nodeport">六、NodePort</a>
+      <ul>
+        <li><a href="#1结构-图">1.结构 图</a></li>
+        <li><a href="#2资源清单-1">2.资源清单</a></li>
       </ul>
     </li>
   </ul>

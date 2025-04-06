@@ -347,7 +347,7 @@
   <meta itemprop="description" content="React 是由 Facebook 开发并维护的一个用于构建用户界面的 JavaScript 库，因其高效、灵活和可复用性强等特点，在 Web 开发领域得到了广泛应用">
   <meta itemprop="datePublished" content="2021-06-02T22:13:02+08:00">
   <meta itemprop="dateModified" content="2021-06-02T22:13:02+08:00">
-  <meta itemprop="wordCount" content="7550">
+  <meta itemprop="wordCount" content="10890">
   <meta itemprop="image" content="https://moonlightmazed.github.io/posts/web/react/image.png">
   <meta itemprop="keywords" content="React">
 
@@ -358,7 +358,7 @@
           <span data-format="luxon">2021-06-02T22:13:02&#43;08:00</span>
           
 
-          | <span>16分钟阅读</span>
+          | <span>22分钟阅读</span>
 
           
           | <span>更新于
@@ -1265,7 +1265,326 @@
 <li><strong>与 <code>useMemo</code> 的区别</strong>：<code>useCallback</code> 缓存的是函数引用，而 <code>useMemo</code> 缓存的是函数的返回值。如果需要缓存一个函数，使用 <code>useCallback</code>；如果需要缓存一个计算结果，使用 <code>useMemo</code>。</li>
 </ul>
 <h2 id="usecontext和usereducer实现状态管理">useContext和useReducer实现状态管理</h2>
+<h4 id="usecontext">useContext</h4>
+<p><code>useContext</code> 是一个非常实用的钩子，其主要作用是让组件能够访问 React 上下文（Context）中的数据，而不用一级一级地手动传递 props</p>
+<h5 id="上下文context的概念">上下文（Context）的概念</h5>
+<p>在 React 里，数据通常是自上而下（从父组件到子组件）传递的，不过对于某些共享数据（像用户登录状态、主题颜色、语言偏好等），若要把这些数据传递给多层嵌套的子组件，逐个传递 props 会显得很繁琐。上下文（Context）能够让你在组件树里共享这些数据，不用在每个层级手动传递 props。</p>
+<h5 id="usecontext-的用法"><code>useContext</code> 的用法</h5>
+<p><code>useContext</code> 钩子的用途是在函数式组件中读取上下文的值。它接收一个上下文对象（由 <code>React.createContext</code> 创建）作为参数，并且返回该上下文中当前的值。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">createContext</span>, <span style="color:#a6e22e">useContext</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 创建一个上下文对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ThemeContext</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">createContext</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义一个提供主题的组件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ThemeProvider</span> <span style="color:#f92672">=</span> ({ <span style="color:#a6e22e">children</span> }) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">theme</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">color</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;blue&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">background</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;lightgray&#39;</span>
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">ThemeContext.Provider</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">theme</span>}&gt;
+</span></span><span style="display:flex;"><span>            {<span style="color:#a6e22e">children</span>}
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">ThemeContext.Provider</span>&gt; 
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义一个使用主题的组件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ThemedComponent</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 useContext 钩子获取上下文的值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">theme</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useContext</span>(<span style="color:#a6e22e">ThemeContext</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">style</span><span style="color:#f92672">=</span>{{ <span style="color:#a6e22e">color</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">theme</span>.<span style="color:#a6e22e">color</span>, <span style="color:#a6e22e">background</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">theme</span>.<span style="color:#a6e22e">background</span> }}&gt;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">This</span> <span style="color:#a6e22e">is</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">themed</span> <span style="color:#a6e22e">component</span>.
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义根组件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">App</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">ThemeProvider</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">ThemedComponent</span> /&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">ThemeProvider</span>&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">App</span>;
+</span></span></code></pre></div><ol>
+<li><strong>创建上下文对象</strong>：借助 <code>React.createContext</code> 函数创建一个上下文对象 <code>ThemeContext</code>。这个函数会返回一个包含 <code>Provider</code> 和 <code>Consumer</code> 的对象。</li>
+<li><strong>提供上下文值</strong>：<code>ThemeProvider</code> 组件使用 <code>ThemeContext.Provider</code> 来提供上下文的值。<code>value</code> 属性定义了要共享的数据，在这个例子中是 <code>theme</code> 对象。</li>
+<li><strong>使用上下文值</strong>：<code>ThemedComponent</code> 组件运用 <code>useContext</code> 钩子来获取上下文的值。传入 <code>ThemeContext</code> 作为参数，就能得到 <code>ThemeProvider</code> 提供的 <code>theme</code> 对象。</li>
+<li><strong>使用上下文值渲染组件</strong>：在 <code>ThemedComponent</code> 里，使用从上下文中获取的 <code>theme</code> 对象来设置组件的样式。</li>
+</ol>
+<h5 id="注意事项-4">注意事项</h5>
+<ul>
+<li><strong>上下文更新</strong>：当 <code>Provider</code> 的 <code>value</code> 属性发生变化时，所有使用该上下文的组件都会重新渲染。</li>
+<li><strong>默认值</strong>：<code>createContext</code> 函数可以接受一个默认值作为参数，当组件没有匹配到 <code>Provider</code> 时，就会使用这个默认值。</li>
+<li><strong>性能考量</strong>：尽管上下文很方便，但过度使用可能会让组件的依赖关系变得复杂，影响性能。所以，仅在确实需要跨层级共享数据时使用上下文。</li>
+</ul>
+<h4 id="usereducer">useReducer</h4>
+<p><code>useReducer</code> 是一个非常有用的 Hook，它提供了一种管理组件状态的方式，类似于 Redux 中的 reducer 概念，适用于处理复杂的状态逻辑。</p>
+<h5 id="基本概念-1">基本概念</h5>
+<p><code>useReducer</code> 是 React 提供的一个 Hook，它接收一个 reducer 函数和一个初始状态，返回一个当前状态和一个用于触发状态更新的 dispatch 函数。reducer 是一个纯函数，它接收当前状态和一个 action 对象，根据 action 的类型返回一个新的状态。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">reducer</span>, <span style="color:#a6e22e">initialState</span>);
+</span></span></code></pre></div><ul>
+<li><code>reducer</code>：一个纯函数，接收当前状态 <code>state</code> 和一个 <code>action</code> 对象，返回一个新的状态。</li>
+<li><code>initialState</code>：初始状态值。</li>
+<li><code>state</code>：当前的状态值。</li>
+<li><code>dispatch</code>：一个函数，用于触发状态更新，它接收一个 <code>action</code> 对象作为参数。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useReducer</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义 reducer 函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">counterReducer</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">action</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">type</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;increment&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> { <span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;decrement&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> { <span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">state</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义组件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Counter</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 使用 useReducer 钩子
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">counterReducer</span>, { <span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span> });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Count</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">count</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;increment&#39;</span> })}&gt;<span style="color:#a6e22e">Increment</span>&lt;/<span style="color:#f92672">button</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;decrement&#39;</span> })}&gt;<span style="color:#a6e22e">Decrement</span>&lt;/<span style="color:#f92672">button</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">Counter</span>;
+</span></span></code></pre></div><ol>
+<li><strong>定义 reducer 函数</strong>：<code>counterReducer</code> 是一个 reducer 函数，它接收当前状态 <code>state</code> 和一个 <code>action</code> 对象。根据 <code>action</code> 的类型（<code>increment</code> 或 <code>decrement</code>），返回一个新的状态。</li>
+<li><strong>使用 <code>useReducer</code> 钩子</strong>：在 <code>Counter</code> 组件中，使用 <code>useReducer</code> 钩子来管理状态。传入 <code>counterReducer</code> 作为 reducer 函数，<code>{ count: 0 }</code> 作为初始状态。</li>
+<li><strong>获取状态和 dispatch 函数</strong>：<code>useReducer</code> 返回一个数组，包含当前状态 <code>state</code> 和一个 <code>dispatch</code> 函数。</li>
+<li><strong>触发状态更新</strong>：通过调用 <code>dispatch</code> 函数并传入一个 <code>action</code> 对象来触发状态更新。在按钮的 <code>onClick</code> 事件中，分别调用 <code>dispatch({ type: 'increment' })</code> 和 <code>dispatch({ type: 'decrement' })</code> 来增加或减少计数器的值。</li>
+</ol>
+<h5 id="高级用法">高级用法</h5>
+<h6 id="初始化状态">初始化状态</h6>
+<p>可以使用第二个参数 <code>initialState</code> 来设置初始状态，也可以使用第三个参数来实现惰性初始化。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">initialCount</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">init</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">initialCount</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> { <span style="color:#a6e22e">count</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">initialCount</span> };
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">reducer</span>, <span style="color:#a6e22e">initialCount</span>, <span style="color:#a6e22e">init</span>);
+</span></span></code></pre></div><h6 id="处理副作用">处理副作用</h6>
+<p>可以在 <code>useEffect</code> 中使用 <code>dispatch</code> 来处理副作用，例如在组件挂载时获取数据。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useReducer</span>, <span style="color:#a6e22e">useEffect</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">dataReducer</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">action</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (<span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">type</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;FETCH_SUCCESS&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> { <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">payload</span>, <span style="color:#a6e22e">loading</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;FETCH_ERROR&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> { <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">action</span>.<span style="color:#a6e22e">error</span>, <span style="color:#a6e22e">loading</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> };
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">state</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">DataComponent</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">state</span>, <span style="color:#a6e22e">dispatch</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useReducer</span>(<span style="color:#a6e22e">dataReducer</span>, { <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">null</span>, <span style="color:#a6e22e">loading</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>, <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">null</span> });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">useEffect</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fetchData</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">async</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#e6db74">&#39;https://api.example.com/data&#39;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">json</span>();
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;FETCH_SUCCESS&#39;</span>, <span style="color:#a6e22e">payload</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">data</span> });
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">dispatch</span>({ <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;FETCH_ERROR&#39;</span>, <span style="color:#a6e22e">error</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">message</span> });
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fetchData</span>();
+</span></span><span style="display:flex;"><span>    }, []);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">loading</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Loading</span>...&lt;/<span style="color:#f92672">p</span>&gt;;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> &lt;<span style="color:#f92672">p</span>&gt;Error<span style="color:#f92672">:</span> {<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">error</span>}&lt;/<span style="color:#f92672">p</span>&gt;;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> &lt;<span style="color:#f92672">p</span>&gt;{<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">data</span>)}&lt;/<span style="color:#f92672">p</span>&gt;;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">DataComponent</span>;
+</span></span></code></pre></div><h5 id="适用场景">适用场景</h5>
+<ul>
+<li><strong>复杂状态逻辑</strong>：当组件的状态逻辑比较复杂，包含多个子值或需要根据不同的 action 进行复杂的状态更新时，使用 <code>useReducer</code> 可以使状态管理更加清晰和可维护。</li>
+<li><strong>多个相关状态的更新</strong>：当多个状态的更新相互关联时，使用 <code>useReducer</code> 可以将这些更新逻辑集中在一个 reducer 函数中，避免使用多个 <code>useState</code> 钩子带来的复杂性。</li>
+</ul>
+<h5 id="注意事项-5">注意事项</h5>
+<ul>
+<li><strong>reducer 必须是纯函数</strong>：reducer 函数不能有副作用，它应该根据当前状态和 action 同步返回一个新的状态。</li>
+<li><strong>状态不可变</strong>：在 reducer 中，应该返回一个新的状态对象，而不是直接修改原状态对象。</li>
+</ul>
 <h2 id="useref">useRef</h2>
+<p><code>useRef</code> 返回一个可变的 <code>ref</code> 对象，其 <code>.current</code> 属性被初始化为传入的参数（<code>initialValue</code>）。返回的 <code>ref</code> 对象在组件的整个生命周期内保持不变。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">refContainer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#a6e22e">initialValue</span>);
+</span></span></code></pre></div><ul>
+<li><code>initialValue</code>：<code>ref</code> 对象 <code>.current</code> 属性的初始值，可以是任意类型，比如 <code>null</code>、数字、字符串等。</li>
+<li><code>refContainer</code>：返回的 <code>ref</code> 对象，它有一个 <code>.current</code> 属性，可用于存储和访问值。</li>
+</ul>
+<h4 id="使用场景">使用场景</h4>
+<h5 id="1-访问-dom-元素">1. 访问 DOM 元素</h5>
+<p><code>useRef</code> 常被用于访问 DOM 元素，进而实现对元素的操作，像聚焦、滚动等。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useRef</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">TextInputWithFocusButton</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">inputEl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>(<span style="color:#66d9ef">null</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">onButtonClick</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// `current` 指向已挂载到 DOM 上的文本输入元素
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#a6e22e">inputEl</span>.<span style="color:#a6e22e">current</span>.<span style="color:#a6e22e">focus</span>();
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">ref</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">inputEl</span>} <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">onButtonClick</span>}&gt;<span style="color:#a6e22e">Focus</span> <span style="color:#a6e22e">the</span> <span style="color:#a6e22e">input</span>&lt;/<span style="color:#f92672">button</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">TextInputWithFocusButton</span>;
+</span></span></code></pre></div><p>在这个例子中，<code>useRef(null)</code> 创建了一个 <code>ref</code> 对象 <code>inputEl</code>，并将其赋值给 <code>input</code> 元素的 <code>ref</code> 属性。这样，<code>inputEl.current</code> 就指向了这个 <code>input</code> DOM 元素，点击按钮时就能调用 <code>focus</code> 方法让输入框获取焦点。</p>
+<h5 id="2-保存可变值">2. 保存可变值</h5>
+<p><code>useRef</code> 还能用来保存一些需要在组件渲染周期之间保持不变的值，比如定时器 ID、上一次的状态值等。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useRef</span>, <span style="color:#a6e22e">useEffect</span>, <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Counter</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">count</span>, <span style="color:#a6e22e">setCount</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">prevCountRef</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">useRef</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">useEffect</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">prevCountRef</span>.<span style="color:#a6e22e">current</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">count</span>;
+</span></span><span style="display:flex;"><span>    }, [<span style="color:#a6e22e">count</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">prevCount</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">prevCountRef</span>.<span style="color:#a6e22e">current</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Now</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">count</span>}, <span style="color:#a6e22e">before</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">prevCount</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#a6e22e">setCount</span>(<span style="color:#a6e22e">count</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)}&gt;<span style="color:#a6e22e">Increment</span>&lt;/<span style="color:#f92672">button</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">Counter</span>;
+</span></span></code></pre></div><p>在这个例子中，<code>prevCountRef</code> 用于保存上一次的 <code>count</code> 值。每次 <code>count</code> 发生变化时，<code>useEffect</code> 会更新 <code>prevCountRef.current</code> 的值。</p>
+<h4 id="注意事项-6">注意事项</h4>
+<ul>
+<li><strong><code>ref</code> 对象的 <code>.current</code> 属性是可变的</strong>：你可以随时修改 <code>ref.current</code> 的值，并且修改不会触发组件重新渲染。</li>
+<li><strong><code>ref</code> 对象在组件的整个生命周期内保持不变</strong>：每次渲染时返回的 <code>ref</code> 对象都是同一个，这意味着你可以安全地在不同的渲染周期中访问和修改它。</li>
+<li><strong>不要在渲染期间修改 <code>ref</code> 对象</strong>：虽然修改 <code>ref</code> 对象不会触发重新渲染，但在渲染期间修改它可能会导致意外的行为。通常，你应该在事件处理函数或副作用函数（如 <code>useEffect</code>）中修改 <code>ref</code> 对象。</li>
+</ul>
+<h2 id="usetransition">useTransition</h2>
+<p>它能帮助开发者处理紧急和非紧急的状态更新，以此优化用户体验和性能</p>
+<h4 id="基本概念-2">基本概念</h4>
+<p>在 React 里，状态更新一般是紧急的，也就是一旦触发更新，React 会立刻重新渲染组件。但某些状态更新（例如搜索结果的过滤、切换视图等）并非紧急，即时更新可能会让页面卡顿，影响用户体验。<code>useTransition</code> 允许你把这些非紧急的更新标记为过渡（transition），从而让 React 可以在不阻塞 UI 的情况下处理它们。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">isPending</span>, <span style="color:#a6e22e">startTransition</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useTransition</span>();
+</span></span></code></pre></div><ul>
+<li>
+<p>返回值</p>
+<p>：</p>
+<ul>
+<li><code>isPending</code>：这是一个布尔值，用于表明过渡是否正在进行。在过渡期间，<code>isPending</code> 为 <code>true</code>，过渡结束后则变为 <code>false</code>。你可以利用这个值来显示加载状态，如加载指示器。</li>
+<li><code>startTransition</code>：这是一个函数，用于将非紧急的状态更新包装成过渡。它接收一个回调函数作为参数，在回调函数里进行的状态更新会被标记为非紧急。</li>
+</ul>
+</li>
+</ul>
+<h4 id="使用示例">使用示例</h4>
+<h5 id="示例-1基本使用">示例 1：基本使用</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span>, <span style="color:#a6e22e">useTransition</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">App</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">inputValue</span>, <span style="color:#a6e22e">setInputValue</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#e6db74">&#39;&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">list</span>, <span style="color:#a6e22e">setList</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>([]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">isPending</span>, <span style="color:#a6e22e">startTransition</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useTransition</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">handleInputChange</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">e</span>) =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">target</span>.<span style="color:#a6e22e">value</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">setInputValue</span>(<span style="color:#a6e22e">value</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">startTransition</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 模拟一个耗时的过滤操作
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">newList</span> <span style="color:#f92672">=</span> Array.<span style="color:#a6e22e">from</span>({ <span style="color:#a6e22e">length</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">10000</span> }).<span style="color:#a6e22e">map</span>((<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">index</span>) =&gt; <span style="color:#e6db74">`Item </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">index</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>).<span style="color:#a6e22e">filter</span>(<span style="color:#a6e22e">item</span> =&gt; <span style="color:#a6e22e">item</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#a6e22e">value</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">setList</span>(<span style="color:#a6e22e">newList</span>);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">input</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">inputValue</span>}
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">onChange</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">handleInputChange</span>}
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">placeholder</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Search...&#34;</span>
+</span></span><span style="display:flex;"><span>            /&gt;
+</span></span><span style="display:flex;"><span>            {<span style="color:#a6e22e">isPending</span> <span style="color:#f92672">&amp;&amp;</span> &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Loading</span>...&lt;/<span style="color:#f92672">p</span>&gt;}
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>                {<span style="color:#a6e22e">list</span>.<span style="color:#a6e22e">map</span>(<span style="color:#a6e22e">item</span> =&gt; (
+</span></span><span style="display:flex;"><span>                    &lt;<span style="color:#f92672">li</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">item</span>}&gt;{<span style="color:#a6e22e">item</span>}&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>                ))}
+</span></span><span style="display:flex;"><span>            &lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">App</span>;
+</span></span></code></pre></div><p>在这个例子中：</p>
+<ul>
+<li>当输入框内容改变时，<code>handleInputChange</code> 函数会立即更新 <code>inputValue</code>（紧急更新）。</li>
+<li>然后使用 <code>startTransition</code> 将过滤列表的操作和更新 <code>list</code> 状态的操作包装起来，这些操作会被标记为非紧急。</li>
+<li><code>isPending</code> 用于在过渡期间显示加载提示。</li>
+</ul>
+<h5 id="示例-2结合-useeffect">示例 2：结合 <code>useEffect</code></h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span>, <span style="color:#a6e22e">useTransition</span>, <span style="color:#a6e22e">useEffect</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">App</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">isPending</span>, <span style="color:#a6e22e">startTransition</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useTransition</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> [<span style="color:#a6e22e">count</span>, <span style="color:#a6e22e">setCount</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">useState</span>(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">useEffect</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">intervalId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">setInterval</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">startTransition</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">setCount</span>(<span style="color:#a6e22e">prevCount</span> =&gt; <span style="color:#a6e22e">prevCount</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>            });
+</span></span><span style="display:flex;"><span>        }, <span style="color:#ae81ff">1000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> () =&gt; <span style="color:#a6e22e">clearInterval</span>(<span style="color:#a6e22e">intervalId</span>);
+</span></span><span style="display:flex;"><span>    }, []);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>            {<span style="color:#a6e22e">isPending</span> <span style="color:#f92672">&amp;&amp;</span> &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Updating</span>...&lt;/<span style="color:#f92672">p</span>&gt;}
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Count</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">count</span>}&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">App</span>;
+</span></span></code></pre></div><p>在这个例子中，使用 <code>useEffect</code> 设置了一个定时器，每秒调用一次 <code>startTransition</code> 来更新 <code>count</code> 状态，把状态更新标记为非紧急。</p>
+<h4 id="注意事项-7">注意事项</h4>
+<ul>
+<li><strong>紧急更新优先</strong>：紧急更新（如事件处理函数中的状态更新）会优先于过渡更新执行。</li>
+<li><strong>避免嵌套过渡</strong>：虽然可以嵌套调用 <code>startTransition</code>，但通常不建议这样做，以免让代码逻辑变得复杂。</li>
+<li><strong>性能优化</strong>：合理使用 <code>useTransition</code> 能避免不必要的渲染，提高应用性能，特别是在处理大量数据或复杂计算时。</li>
+</ul>
 
 
         
@@ -1335,8 +1654,21 @@
         <li></li>
       </ul>
     </li>
-    <li><a href="#usecontext和usereducer实现状态管理">useContext和useReducer实现状态管理</a></li>
-    <li><a href="#useref">useRef</a></li>
+    <li><a href="#usecontext和usereducer实现状态管理">useContext和useReducer实现状态管理</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#useref">useRef</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#usetransition">useTransition</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     

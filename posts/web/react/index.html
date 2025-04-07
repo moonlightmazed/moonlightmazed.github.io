@@ -347,7 +347,7 @@
   <meta itemprop="description" content="React 是由 Facebook 开发并维护的一个用于构建用户界面的 JavaScript 库，因其高效、灵活和可复用性强等特点，在 Web 开发领域得到了广泛应用">
   <meta itemprop="datePublished" content="2021-06-02T22:13:02+08:00">
   <meta itemprop="dateModified" content="2021-06-02T22:13:02+08:00">
-  <meta itemprop="wordCount" content="13610">
+  <meta itemprop="wordCount" content="13645">
   <meta itemprop="image" content="https://moonlightmazed.github.io/posts/web/react/image.png">
   <meta itemprop="keywords" content="React">
 
@@ -527,7 +527,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">App</span>;
 </span></span></code></pre></div><h2 id="表单事件">表单事件</h2>
-<h3 id="文本输入框input事件">文本输入框(<code>input</code>)事件</h3>
+<h3 id="文本输入框input事件">文本输入框(input)事件</h3>
 <p>对于文本输入框，通常会用到 <code>onChange</code> 事件来实时捕获输入内容的变化，用 <code>onSubmit</code> 事件来处理表单提交。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 </span></span><span style="display:flex;"><span>
@@ -558,7 +558,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">TextInputForm</span>;
 </span></span></code></pre></div><p>在上述代码中，<code>useState</code> 用于创建一个状态变量 <code>inputValue</code> 来存储输入框的值。<code>handleChange</code> 函数会在输入内容变化时更新该状态。<code>handleSubmit</code> 函数则在表单提交时被调用，使用 <code>e.preventDefault()</code> 来阻止表单的默认提交行为。</p>
-<h3 id="复选框-inputtypecheckbox-事件">复选框 (<code>input[type=&quot;checkbox&quot;]</code>) 事件</h3>
+<h3 id="复选框inputtypecheckbox事件">复选框(input[type=&ldquo;checkbox&rdquo;])事件</h3>
 <p>复选框通常使用 <code>onChange</code> 事件来处理选中状态的变化。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 </span></span><span style="display:flex;"><span>
@@ -583,7 +583,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">CheckboxForm</span>;
 </span></span></code></pre></div><p>这里，<code>isChecked</code> 状态变量用来存储复选框的选中状态，<code>handleCheckboxChange</code> 函数会在复选框状态改变时更新该状态。</p>
-<h3 id="下拉框select事件">下拉框（<code>select</code>）事件</h3>
+<h3 id="下拉框select事件">下拉框(select)事件</h3>
 <p>下拉框同样使用 <code>onChange</code> 事件来处理选项的选择变化。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 </span></span><span style="display:flex;"><span>
@@ -607,7 +607,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">SelectForm</span>;
 </span></span></code></pre></div><p>此例中，<code>selectedOption</code> 状态变量存储当前选中的选项值，<code>handleSelectChange</code> 函数会在选项改变时更新该状态。</p>
-<h3 id="多行文本框textarea事件">多行文本框（<code>textarea</code>）事件</h3>
+<h3 id="多行文本框textarea事件">多行文本框(textarea)事件</h3>
 <p>多行文本框和输入框类似，使用 <code>onChange</code> 事件处理内容变化。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 </span></span><span style="display:flex;"><span>
@@ -726,7 +726,7 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#a6e22e">ParentComponent</span>;
 </span></span></code></pre></div><p>在这个示例中，<code>ParentComponent</code> 将 <code>handleChildClick</code> 函数作为 <code>onClick</code> 属性传递给 <code>ChildComponent</code>。<code>ChildComponent</code> 中的按钮点击事件调用 <code>props.onClick</code> 函数，并传递一个消息给父组件。</p>
-<h3 id="上下文context传递属性">上下文（<code>Context</code>）传递属性</h3>
+<h3 id="上下文context传递属性">上下文(Context)传递属性</h3>
 <p>当你需要在多个层级的组件之间共享数据时，使用上下文（Context）是一个不错的选择。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span>, { <span style="color:#a6e22e">createContext</span>, <span style="color:#a6e22e">useContext</span>, <span style="color:#a6e22e">useState</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
 </span></span><span style="display:flex;"><span>
@@ -1998,10 +1998,10 @@ useActionData 是一个 React 钩子函数，用于在组件中获取 action 函
     </li>
     <li><a href="#表单事件">表单事件</a>
       <ul>
-        <li><a href="#文本输入框input事件">文本输入框(<code>input</code>)事件</a></li>
-        <li><a href="#复选框-inputtypecheckbox-事件">复选框 (<code>input[type=&quot;checkbox&quot;]</code>) 事件</a></li>
-        <li><a href="#下拉框select事件">下拉框（<code>select</code>）事件</a></li>
-        <li><a href="#多行文本框textarea事件">多行文本框（<code>textarea</code>）事件</a></li>
+        <li><a href="#文本输入框input事件">文本输入框(input)事件</a></li>
+        <li><a href="#复选框inputtypecheckbox事件">复选框(input[type=&ldquo;checkbox&rdquo;])事件</a></li>
+        <li><a href="#下拉框select事件">下拉框(select)事件</a></li>
+        <li><a href="#多行文本框textarea事件">多行文本框(textarea)事件</a></li>
       </ul>
     </li>
     <li><a href="#属性传递">属性传递</a>
@@ -2009,7 +2009,7 @@ useActionData 是一个 React 钩子函数，用于在组件中获取 action 函
         <li><a href="#基本属性传递">基本属性传递</a></li>
         <li><a href="#展开运算符传递属性">展开运算符传递属性</a></li>
         <li><a href="#函数作为属性传递">函数作为属性传递</a></li>
-        <li><a href="#上下文context传递属性">上下文（<code>Context</code>）传递属性</a></li>
+        <li><a href="#上下文context传递属性">上下文(Context)传递属性</a></li>
       </ul>
     </li>
     <li><a href="#usestate">useState</a>

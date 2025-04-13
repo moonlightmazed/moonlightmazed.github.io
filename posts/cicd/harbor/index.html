@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.145.0">
+<meta name="generator" content="Hugo 0.146.3">
 
 
 <meta property="og:url" content="https://moonlightmazed.github.io/posts/cicd/harbor/">
@@ -405,23 +405,24 @@
         
 
         <h2 id="更换国内源">更换国内源</h2>
-<pre tabindex="0"><code># 阿里
-sed -e &#39;s|^#mirrorlist=|mirrorlist=|g&#39; \
-    -e &#39;s|^baseurl=https://mirrors.aliyun.com/rockylinux|#baseurl=http://dl.rockylinux.org/$contentdir|g&#39; \
+<p class="mathjax"># 阿里
+sed -e 's|^#mirrorlist=|mirrorlist=|g' \
+    -e 's|^baseurl=https://mirrors.aliyun.com/rockylinux|#baseurl=http://dl.rockylinux.org/$contentdir|g' \
     -i.bak \
     /etc/yum.repos.d/rocky*.repo
 
 # 中科大
-sed -e &#39;s|^mirrorlist=|#mirrorlist=|g&#39; \
-    -e &#39;s|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g&#39; \
+sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g' \
     -i.bak \
     /etc/yum.repos.d/rocky-extras.repo \
     /etc/yum.repos.d/rocky.repo
 
 
 # 生成缓存
-dnf makecache
-</code></pre><h2 id="docker-安装">Docker 安装</h2>
+dnf makecache</p>
+
+<h2 id="docker-安装">Docker 安装</h2>
 <h3 id="更新系统与安装依赖">更新系统与安装依赖</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo dnf update -y
 </span></span><span style="display:flex;"><span>sudo dnf install -y yum-utils device-mapper-persistent-data lvm2
@@ -547,10 +548,10 @@ dnf makecache
         
 
         
-        <a class="group btn btn-outline" href="/posts/web/react/" title="React">
+        <a class="group btn btn-outline" href="/posts/clientgo/base/" title="Client-go">
           <div class="inline-flex flex-col items-end">
             <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
-            <span class="max-w-48 truncate">React</span>
+            <span class="max-w-48 truncate">Client-go</span>
           </div>
           <ion-icon name="chevron-forward"></ion-icon>
         </a>
@@ -761,6 +762,20 @@ dnf makecache
 
 
     
+
+    
+      <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [
+        ['\\[', '\\]'],
+        ['$$', '$$'],
+      ], 
+      inlineMath: [['\\(', '\\)']], 
+    },
+  }
+</script>
 
     
 

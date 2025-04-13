@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Log on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/log/</link>
+    <description>Recent content in Log on MoonLightMaze’s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Sun, 11 Aug 2024 14:21:02 +0800</lastBuildDate>
+    <atom:link href="https://moonlightmazed.github.io/tags/log/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Slog日志包</title>
+      <link>https://moonlightmazed.github.io/posts/golang/log/-index/</link>
+      <pubDate>Sun, 11 Aug 2024 14:21:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/golang/log/-index/</guid>
+      <description>&lt;p&gt;slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

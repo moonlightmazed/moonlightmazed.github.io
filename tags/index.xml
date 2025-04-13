@@ -6,8 +6,15 @@
     <description>Recent content in Tags on MoonLightMaze’s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Thu, 14 Mar 2024 03:03:52 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 11 Aug 2024 14:21:02 +0800</lastBuildDate>
     <atom:link href="https://moonlightmazed.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Log</title>
+      <link>https://moonlightmazed.github.io/tags/log/</link>
+      <pubDate>Sun, 11 Aug 2024 14:21:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/log/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CI</title>
       <link>https://moonlightmazed.github.io/tags/ci/</link>
@@ -34,6 +41,20 @@
       <link>https://moonlightmazed.github.io/tags/%E4%BB%93%E5%BA%93/</link>
       <pubDate>Sat, 13 Jan 2024 18:48:49 +0800</pubDate>
       <guid>https://moonlightmazed.github.io/tags/%E4%BB%93%E5%BA%93/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Client-Go</title>
+      <link>https://moonlightmazed.github.io/tags/client-go/</link>
+      <pubDate>Sat, 03 Jun 2023 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/client-go/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Gin</title>
+      <link>https://moonlightmazed.github.io/tags/gin/</link>
+      <pubDate>Sat, 03 Jun 2023 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/tags/gin/</guid>
       <description></description>
     </item>
     <item>

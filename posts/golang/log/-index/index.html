@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slog日志包 | MoonLightMaze’s Blog</title>
+
+    
+  
+    <link href="/img/favicon.ico" rel="icon" type="image/x-icon" />
+  
+
+
+<link rel="canonical" href="https://moonlightmazed.github.io/posts/golang/log/-index/" />
+
+
+
+<meta name="author" content="MoonlightMaze" />
+<meta name="description" content="slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。" />
+
+
+<meta name="keywords" content="Log">
+
+
+
+<meta name="generator" content="Hugo 0.146.3">
+
+
+<meta property="og:url" content="https://moonlightmazed.github.io/posts/golang/log/-index/">
+  <meta property="og:site_name" content="MoonLightMaze’s Blog">
+  <meta property="og:title" content="Slog日志包">
+  <meta property="og:description" content="slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-08-11T14:21:02+08:00">
+    <meta property="article:modified_time" content="2024-08-11T14:21:02+08:00">
+    <meta property="article:tag" content="Log">
+    <meta property="og:image" content="https://moonlightmazed.github.io/image.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://moonlightmazed.github.io/image.png">
+  <meta name="twitter:title" content="Slog日志包">
+  <meta name="twitter:description" content="slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。">
+
+
+
+
+  
+
+<link rel="stylesheet" href="/css/output.min.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+
+    
+    <script defer src = "/js/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/avatar.webp" alt="MoonLightMaze’s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="https://moonlightmazed.github.io/" class="text-lg font-semibold cursor-pointer">
+          MoonLightMaze’s Blog
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">代码写的越急，程序跑得越慢</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/" target="" title="home">
+    
+    <ion-icon name="home"></ion-icon>
+    
+    home
+  </a>
+</li>
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
+</li>
+
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    
+    <ion-icon name="logo-github"></ion-icon>
+    
+    GitHub
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/" target="" title="home">
+    <ion-icon class="group-hover:text-primary-content" name="home"></ion-icon>
+  </a>
+  
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    <ion-icon class="group-hover:text-primary-content" name="logo-github"></ion-icon>
+  </a>
+  
+
+
+
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+
+<div class="lg:grid lg:grid-cols-5 gap-4 mt-4 px-4">
+  
+  <div class="lg:col-span-4">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert w-full" id="dream-single-post-main" itemscope
+      itemtype="http://schema.org/Article" style="margin-right: 30px;max-width: 100% !important;width: 100% !important; ">
+      
+  <meta itemprop="name" content="Slog日志包">
+  <meta itemprop="description" content="slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。">
+  <meta itemprop="datePublished" content="2024-08-11T14:21:02+08:00">
+  <meta itemprop="dateModified" content="2024-08-11T14:21:02+08:00">
+  <meta itemprop="wordCount" content="9173">
+  <meta itemprop="image" content="https://moonlightmazed.github.io/image.png">
+  <meta itemprop="keywords" content="Log">
+
+      <header>
+        <h1 itemprop="headline">Slog日志包</h1>
+        <p class="text-sm">
+          
+          <span data-format="luxon">2024-08-11T14:21:02&#43;08:00</span>
+          
+
+          | <span>19分钟阅读</span>
+
+          
+          | <span>更新于
+            
+            <span data-format="luxon">2024-08-11T14:21:02&#43;08:00</span>
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">MoonlightMaze</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      
+      <section id="dream-single-post-content" itemprop="articleBody" class="w-full" style="margin-top: 40px !important;">
+        
+
+        <p>slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。</p>
+<p>slog 设计之初大量参考了社区中现有日志包方案，相比于 log，主要解决了两个问题：</p>
+<ul>
+<li>log 不支持日志级别。</li>
+<li>log 日志不是结构化的。</li>
+</ul>
+<p>这两个问题都能在 slog 中得到解决，本文就来带大家详解 slog 用法及设计。</p>
+<h2 id="slog-快速入门">slog 快速入门</h2>
+<h3 id="1-快速开始">1. 快速开始</h3>
+<p>slog 使用非常简单，导入 log/slog 后即可使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;log/slog&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Warn</span>(<span style="color:#e6db74">&#34;warn message&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;error message&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">20</span>:<span style="color:#ae81ff">38</span> <span style="color:#a6e22e">INFO</span> <span style="color:#a6e22e">info</span> <span style="color:#a6e22e">message</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">20</span>:<span style="color:#ae81ff">38</span> <span style="color:#a6e22e">WARN</span> <span style="color:#a6e22e">warn</span> <span style="color:#a6e22e">message</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">20</span>:<span style="color:#ae81ff">38</span> <span style="color:#a6e22e">ERROR</span> <span style="color:#66d9ef">error</span> <span style="color:#a6e22e">message</span>
+</span></span></code></pre></div><p>slog 日志默认输出到 <code>os.Stdout</code>。</p>
+<p>可以发现 <code>Debug</code> 日志并没有输出，说明 slog 日志默认级别为 <code>Info</code>。</p>
+<p>slog 默认仅支持 <code>Debug、Info、Warn、Error</code> 这 4 种日志级别，后文会演示如何增加自定义日志级别。</p>
+<h3 id="2-附加属性">2. 附加属性</h3>
+<p>slog 支持在 msg 后传入无限多个 key/value 键值对来附加额外的属性：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Warn</span>(<span style="color:#e6db74">&#34;warn message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;error message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">21</span>:<span style="color:#ae81ff">33</span> <span style="color:#a6e22e">INFO</span> <span style="color:#a6e22e">info</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">21</span>:<span style="color:#ae81ff">33</span> <span style="color:#a6e22e">WARN</span> <span style="color:#a6e22e">warn</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">21</span>:<span style="color:#ae81ff">33</span> <span style="color:#a6e22e">ERROR</span> <span style="color:#66d9ef">error</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span></code></pre></div><p>可以发现，传递给日志方法的键值对会以 key=value 格式输出</p>
+<h3 id="3-context-版本日志方法">3. Context 版本日志方法</h3>
+<p>slog 的日志方法都存在 XxxContext 版本，使用示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">DebugContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">InfoContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">WarnContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;warn message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">ErrorContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;error message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">22</span>:<span style="color:#ae81ff">29</span> <span style="color:#a6e22e">INFO</span> <span style="color:#a6e22e">info</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">22</span>:<span style="color:#ae81ff">29</span> <span style="color:#a6e22e">WARN</span> <span style="color:#a6e22e">warn</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">22</span>:<span style="color:#ae81ff">29</span> <span style="color:#a6e22e">ERROR</span> <span style="color:#66d9ef">error</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span></code></pre></div><p>输出结果与不使用 Context 版本的日志方法相同
+事实上，它们的代码主逻辑是一样的：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Info calls [Logger.Info] on the default logger.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Default</span>().<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// InfoContext calls [Logger.InfoContext] on the default logger.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">InfoContext</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Default</span>().<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>无论是 Xxx 还是 XxxContext 版本的日志方法，底层都会调用 slog.Logger.log 方法，只不过 Xxx 日志方法的 context 是在方法内部构造的，XxxContext 日志方法的 context 是通过参数传入的。</p>
+<h3 id="3-修改日志级别">3. 修改日志级别</h3>
+<p>我们可以将 slog 日志级别修改为 <code>Debug</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">SetLogLoggerLevel</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Warn</span>(<span style="color:#e6db74">&#34;warn message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#e6db74">&#34;error message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">23</span>:<span style="color:#ae81ff">31</span> <span style="color:#a6e22e">DEBUG</span> <span style="color:#a6e22e">debug</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">23</span>:<span style="color:#ae81ff">31</span> <span style="color:#a6e22e">INFO</span> <span style="color:#a6e22e">info</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">23</span>:<span style="color:#ae81ff">31</span> <span style="color:#a6e22e">WARN</span> <span style="color:#a6e22e">warn</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2024</span><span style="color:#f92672">/</span><span style="color:#ae81ff">06</span><span style="color:#f92672">/</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">23</span>:<span style="color:#ae81ff">31</span> <span style="color:#a6e22e">ERROR</span> <span style="color:#66d9ef">error</span> <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span></code></pre></div><p>可以发现，slog 修改日志级别还是非常方便的。</p>
+<h3 id="4-获取当前日志级别">4. 获取当前日志级别</h3>
+<p>既然可以修改日志级别，那么我们是否也可以获取当前日志级别呢？</p>
+<p>很遗憾，slog 没有为我们提供一个方法可以便捷的获取日志级别。</p>
+<p>不过，slog 的 <code>Logger</code> 对象有一个 <code>Enabled</code> 方法，可以用来判断给定的日志级别是否被开启。</p>
+<p>那么我们就可以将日志级别由低到高依次传给 <code>Enabled</code> 方法来判断当前日志级别是否启用，只要当前日志级别已经启用，就说明 slog 开启的最低日志级别是当前日志级别。</p>
+<p>示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">currentLevel</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span> = <span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">level</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> []<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>{<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelWarn</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelError</span>} {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Default</span>().<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">level</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">currentLevel</span> = <span style="color:#a6e22e">level</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;current log level: %v\n&#34;</span>, <span style="color:#a6e22e">currentLevel</span>)
+</span></span></code></pre></div><p>代码中初始化 currentLevel 用来记录当前日志级别，类型为 slog.Level，初始值为 -10。这之所以能生效，是因为其实 slog.Level 本身就是 int 类型。</p>
+<p>slog 默认支持的几种日志级别定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Level</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelDebug</span> <span style="color:#a6e22e">Level</span> = <span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelInfo</span>  <span style="color:#a6e22e">Level</span> = <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelWarn</span>  <span style="color:#a6e22e">Level</span> = <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelError</span> <span style="color:#a6e22e">Level</span> = <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>可以发现这几个日志级别并不是连续的，这是 slog 团队经过深思熟虑后的结果。故意这样设计，是为了方便我们增加自定义日志级别。使我们可以在任意两个日志级别之间定义自己的日志级别（后文会有讲解）。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">current</span> <span style="color:#a6e22e">log</span> <span style="color:#a6e22e">level</span>: <span style="color:#a6e22e">DEBUG</span>
+</span></span></code></pre></div><p><code>currentLevel</code> 初始值为 <code>-10</code> 而不是最低的日志级别 <code>LevelDebug</code>，可以证明这段获取当前日志级别的示例代码的确是有效的，而不是因为默认值设为 <code>LevelDebug</code> 打印结果才是 <code>DEBUG</code>。</p>
+<h3 id="5-结构化日志">5. 结构化日志</h3>
+<p>虽然我们说 slog 是结构化的日志包，但其实前文示例中打印的日志结果，并不是结构化的。</p>
+<p>接下来看看 slog 支持的真正结构化日志输出长什么样。</p>
+<h4 id="jsonhandler">JSONHandler</h4>
+<p>slog 支持 JSON 结构化日志。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>我们可以通过 <code>slog.New</code> 方法创建一个自定义的 <code>*slog.Logger</code>。</p>
+<p>slog.New 接收一个 slog.Handler 对象（slog.Handler 是一个接口，后文会详细讲解）。</p>
+<p>slog 内置了两个 slog.Handler 对象，其中一个就是 *slog.JSONHandler，可以使用 slog.NewJSONHandler 来创建。</p>
+<p>slog.NewJSONHandler 接收两个参数，传入的 os.Stdout 是一个 io.Writer 接口，用来指定日志输出位置。</p>
+<p>*slog.HandlerOptions 是一个结构体，AddSource 设为 true 可以输出记录日志的位置，Level 用来指定日志级别，ReplaceAttr 属性后文再来讲解。</p>
+<p>执行示例代码，输出结果如下</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:25:34.880089+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;DEBUG&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">71</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;debug message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+
+
+  <blockquote>
+    <p>NOTE:
+slog 默认输出的 JSON 格式日志是没有换行和缩进的，例如：
+<code>{&quot;time&quot;:&quot;2024-06-23T10:25:34.880089+08:00&quot;,&quot;level&quot;:&quot;DEBUG&quot;,&quot;source&quot;:{&quot;function&quot;:&quot;main.main&quot;,&quot;file&quot;:&quot;/workspace/projects/blog-go-example/log/slog/main.go&quot;,&quot;line&quot;:71},&quot;msg&quot;:&quot;debug message&quot;,&quot;hello&quot;:&quot;world&quot;}</code>
+为了展示效果更佳清晰，这里输出的 JSON 格式日志是我经过美化处理的。后文示例也会如此。</p>
+  </blockquote>
+
+<p>这就是 JSON 格式的结构化日志输出。</p>
+<h4 id="texthandler">TextHandler</h4>
+<p>slog 内置的另一个 slog.Handler 对象是 *slog.TextHandler，可以将日志输出为 key=value 结构：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewTextHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">time</span>=<span style="color:#ae81ff">2024</span><span style="color:#f92672">-</span><span style="color:#ae81ff">06</span><span style="color:#f92672">-</span><span style="color:#ae81ff">23</span><span style="color:#a6e22e">T10</span>:<span style="color:#ae81ff">25</span>:<span style="color:#ae81ff">34.880</span><span style="color:#f92672">+</span><span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">00</span> <span style="color:#a6e22e">level</span>=<span style="color:#a6e22e">DEBUG</span> <span style="color:#a6e22e">source</span>=<span style="color:#f92672">/</span><span style="color:#a6e22e">workspace</span><span style="color:#f92672">/</span><span style="color:#a6e22e">projects</span><span style="color:#f92672">/</span><span style="color:#a6e22e">blog</span><span style="color:#f92672">-</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">example</span><span style="color:#f92672">/</span><span style="color:#a6e22e">log</span><span style="color:#f92672">/</span><span style="color:#a6e22e">slog</span><span style="color:#f92672">/</span><span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>:<span style="color:#ae81ff">80</span> <span style="color:#a6e22e">msg</span>=<span style="color:#e6db74">&#34;debug message&#34;</span> <span style="color:#a6e22e">hello</span>=<span style="color:#a6e22e">world</span>
+</span></span></code></pre></div><p>一般来说，TextHandler 可以作为开发/测试环境的日志输出格式，方便查看；JSONHandler 可以作为生产环境的日志输出格式，方便日志工具采集。</p>
+
+
+
+  <blockquote>
+    <p>NOTE:
+程序中可以通过环境变量来获取当前程序所处环境是开发、测试还是生产，以此来决定使用哪个 Handler。</p>
+  </blockquote>
+
+<h3 id="6-使用自定义-logger-替换默认-logger">6. 使用自定义 logger 替换默认 logger</h3>
+<p>前文已经演示了如何通过 <code>slog.New</code> 方法创建一个自定义的 <code>*slog.Logger</code>。</p>
+<p>我们可以使用自定义的 <code>logger</code> 来替换掉 slog 默认的 <code>logger</code> 对象，方便使用。</p>
+<p>示例如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;normal log&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">SetDefault</span>(<span style="color:#a6e22e">l</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// log 也被修改了</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;normal log&#34;</span>)
+</span></span></code></pre></div><p>使用 slog.SetDefault(l) 可以非常方便的用自定义的 *slog.Logger 对象 l 取代默认 logger 对象。</p>
+<p>然后就可以像使用默认 logger 一样调用 slog.Info 使用自定义 *slog.Logger 记录日志了。</p>
+<p>并且，slog.SetDefault(l) 对 log 库同样生效。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:27:18.946947+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">95</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:27:18.946957+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;DEBUG&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;normal log&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+
+
+  <blockquote>
+    <p>NOTE:
+这里 log.Println(&ldquo;normal log&rdquo;) 输出的 JSON 日志也是经过美化处理的。</p>
+  </blockquote>
+
+<h3 id="7-将-sloglogger-转换为-loglogger">7. 将 slog.Logger 转换为 log.Logger</h3>
+<p>既然 slog.SetDefault(l) 对 log 库有影响，则说明 *slog.Logger 对象可以被转换成 *log.Logger 对象。</p>
+<p>转换示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">logLogger</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewLogLogger</span>(<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Handler</span>(), <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelInfo</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">logLogger</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;normal log&#34;</span>) <span style="color:#75715e">// 输出日志级别跟随 slog.LevelInfo 设置</span>
+</span></span></code></pre></div><p><code>slog.NewLogLogger</code> 可以创建一个 <code>*log.Logger</code> 对象，而它的参数分别是 <code>slog.Handler</code> 对象和日志级别。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:30:07.99423+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">109</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;normal log&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>可以发现，通过标准库 *log.Logger 对象 logLogger 输出的日志依然是 JSON 格式。</p>
+<h3 id="8-使用宽松类型可能出现不匹配的属性键值对">8. 使用宽松类型可能出现不匹配的属性键值对</h3>
+<p>前文有介绍 slog 支持在 msg 后传入无限多个 key/value 键值对来附加额外的属性。</p>
+<p>但是，这里存在一个坑！如果 key/value 不是成对出现，则输出日志会得到意想不到的结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>) <span style="color:#75715e">// &#34;!BADKEY&#34;:&#34;hello&#34;</span>
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:30:53.200792+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">120</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;!BADKEY&#34;</span>: <span style="color:#e6db74">&#34;hello&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>示例中除了 msg 外，仅存在一个为 hello 的 key，并没有传入对应的 value。</p>
+<p>此时 slog 不会报错，但输出日志结果 &ldquo;!BADKEY&rdquo;: &ldquo;hello&rdquo;，提示我们 key/value 数量不匹配。</p>
+<p>为了避免这种错误发生，我们可以使用 go vet 工具来进行检查：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">vet</span> .      
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">jianghushinian</span><span style="color:#f92672">/</span><span style="color:#a6e22e">blog</span><span style="color:#f92672">-</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">example</span><span style="color:#f92672">/</span><span style="color:#a6e22e">log</span><span style="color:#f92672">/</span><span style="color:#a6e22e">slog</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">#</span> [<span style="color:#a6e22e">github</span>.<span style="color:#a6e22e">com</span><span style="color:#f92672">/</span><span style="color:#a6e22e">jianghushinian</span><span style="color:#f92672">/</span><span style="color:#a6e22e">blog</span><span style="color:#f92672">-</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">example</span><span style="color:#f92672">/</span><span style="color:#a6e22e">log</span><span style="color:#f92672">/</span><span style="color:#a6e22e">slog</span>]
+</span></span><span style="display:flex;"><span>.<span style="color:#f92672">/</span><span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>:<span style="color:#ae81ff">120</span>:<span style="color:#ae81ff">3</span>: <span style="color:#a6e22e">call</span> <span style="color:#a6e22e">to</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">Info</span> <span style="color:#a6e22e">missing</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">final</span> <span style="color:#a6e22e">value</span>
+</span></span></code></pre></div><p>可以看到，go vet 能够发现代码中 slog 输出的日志属性中 key/value 数量不匹配问题。</p>
+<h3 id="9-使用强类型缓解可能出现不匹配的属性键值对">9. 使用强类型缓解可能出现不匹配的属性键值对</h3>
+<p>我们可以使用 slog 提供的强类型 key/value 来缓解以上问题：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>), <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;status&#34;</span>, <span style="color:#ae81ff">200</span>))
+</span></span></code></pre></div><p>slog 提供了常见的基础类型方法，可以传入对应的 <code>key/value</code> 对。</p>
+<p>使用 <code>slog.String、slog.Int</code> 等可以避免不匹配的 <code>key/value</code>。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:32:23.420762+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">135</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;status&#34;</span>: <span style="color:#ae81ff">200</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>但是，使用强类型方法，依然不能限制我们传入普通的字符串类型 key/value。</p>
+<p>我们还是可能写出如下代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>), <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;status&#34;</span>, <span style="color:#ae81ff">200</span>), <span style="color:#e6db74">&#34;extra&#34;</span>) <span style="color:#75715e">// &#34;!BADKEY&#34;:&#34;extra&#34;</span>
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:32:23.420787+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">136</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;status&#34;</span>: <span style="color:#ae81ff">200</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;!BADKEY&#34;</span>: <span style="color:#e6db74">&#34;extra&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="10-利用-logattrs-限制必须使用强类型避免出现-badkey">10. 利用 LogAttrs 限制必须使用强类型，避免出现 !BADKEY</h3>
+<p>这个时候，我们还有一种解决方案，就是使用 LogAttrs 来输出日志：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">LogAttrs</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(),
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelInfo</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;status&#34;</span>, <span style="color:#ae81ff">405</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Any</span>(<span style="color:#e6db74">&#34;err&#34;</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;http method not allowed&#34;</span>)), <span style="color:#75715e">// error 类型可以使用 slog.Any 输出</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// &#34;extra&#34;,&#34;text&#34;, // 编译不通过，类型不匹配</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>使用 LogAttrs 方法记录日志，用起来比 Debug、Info 等略显繁琐。不过，它限制只能传递 slog.String、slog.Int 这种强类型，如果传递普通字符串，则编译不通过。</p>
+<p>如果要输出的 value 类型为 error，可以使用 slog.Any 输出。slog 支持的其他类型我就不一一列出来了</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:33:27.820493+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">147</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;status&#34;</span>: <span style="color:#ae81ff">405</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;err&#34;</span>: <span style="color:#e6db74">&#34;http method not allowed&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="11-属性分组">11. 属性分组</h3>
+<p>我们可以使用 slog.Group 为一组 key/value 属性进行分组。</p>
+<h4 id="jsonhandler-1">JSONHandler</h4>
+<p>这是使用 JSONHandler 的属性分组示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Group</span>(<span style="color:#e6db74">&#34;user&#34;</span>, <span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#e6db74">&#34;root&#34;</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;age&#34;</span>, <span style="color:#ae81ff">20</span>)),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:35:03.301692+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">167</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;root&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;age&#34;</span>: <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>可以发现，slog.Group 第一个参数为分组名称 user，接下来传递的属性键值对都属于这个分组。</p>
+<h4 id="texthandler-1">TextHandler</h4>
+<p>使用 TextHandler 的属性分组示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewTextHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Group</span>(<span style="color:#e6db74">&#34;user&#34;</span>, <span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#e6db74">&#34;root&#34;</span>, <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;age&#34;</span>, <span style="color:#ae81ff">20</span>)),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">time</span>=<span style="color:#ae81ff">2024</span><span style="color:#f92672">-</span><span style="color:#ae81ff">06</span><span style="color:#f92672">-</span><span style="color:#ae81ff">23</span><span style="color:#a6e22e">T10</span>:<span style="color:#ae81ff">35</span>:<span style="color:#ae81ff">03.301</span><span style="color:#f92672">+</span><span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">00</span> <span style="color:#a6e22e">level</span>=<span style="color:#a6e22e">INFO</span> <span style="color:#a6e22e">source</span>=<span style="color:#f92672">/</span><span style="color:#a6e22e">workspace</span><span style="color:#f92672">/</span><span style="color:#a6e22e">projects</span><span style="color:#f92672">/</span><span style="color:#a6e22e">blog</span><span style="color:#f92672">-</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">example</span><span style="color:#f92672">/</span><span style="color:#a6e22e">log</span><span style="color:#f92672">/</span><span style="color:#a6e22e">slog</span><span style="color:#f92672">/</span><span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>:<span style="color:#ae81ff">180</span> <span style="color:#a6e22e">msg</span>=<span style="color:#e6db74">&#34;info message&#34;</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">name</span>=<span style="color:#a6e22e">root</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">age</span>=<span style="color:#ae81ff">20</span>
+</span></span></code></pre></div><p>有别于 JSONHandler，这里输出的属性结果是 user.name 形式，而非嵌套形式。</p>
+<h3 id="12-使用子-logger">12. 使用子 logger</h3>
+<p>可以使用 With 方法附加自定义属性到一个新的 *slog.Logger 对象。</p>
+<p>这个新得到的 *slog.Logger 对象使用方式不变，但其所有日志记录都会携带统一的附加属性，非常适合简化代码。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 附加自定义属性</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sl</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">With</span>(<span style="color:#e6db74">&#34;requestId&#34;</span>, <span style="color:#e6db74">&#34;10191529-bc34-4efe-95e4-ecac7321773a&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sl</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sl</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>)
+</span></span></code></pre></div><p>我们为新的 *slog.Logger 对象 sl 附加了 requestId，这在 Web 开发中非常常用，可以用来追踪整个请求链。</p>
+<p>接下来使用 sl 输出的日志都会携带这个 requestId 属性。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:35:53.966953+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;DEBUG&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">195</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;debug message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;requestId&#34;</span>: <span style="color:#e6db74">&#34;10191529-bc34-4efe-95e4-ecac7321773a&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:35:53.966972+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">196</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;requestId&#34;</span>: <span style="color:#e6db74">&#34;10191529-bc34-4efe-95e4-ecac7321773a&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="13-为子-logger-属性分组">13. 为子 logger 属性分组</h3>
+<p>子 logger 对象同样支持属性分组，示例代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sl</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">WithGroup</span>(<span style="color:#e6db74">&#34;user&#34;</span>).<span style="color:#a6e22e">With</span>(<span style="color:#e6db74">&#34;requestId&#34;</span>, <span style="color:#e6db74">&#34;10191529-bc34-4efe-95e4-ecac7321773a&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sl</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;debug message&#34;</span>, <span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#e6db74">&#34;admin&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sl</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#e6db74">&#34;admin&#34;</span>)
+</span></span></code></pre></div><p>使用 <code>WithGroup</code> 方法可以对子 <code>logger</code> 属性进行分组，这里同时使用了 <code>With</code> 又得到一个新的子 <code>logger</code> 对象。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:37:01.62481+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;DEBUG&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">208</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;debug message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;requestId&#34;</span>: <span style="color:#e6db74">&#34;10191529-bc34-4efe-95e4-ecac7321773a&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:37:01.625249+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">209</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;requestId&#34;</span>: <span style="color:#e6db74">&#34;10191529-bc34-4efe-95e4-ecac7321773a&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>可以发现，使用 With 附加的属性和调用 Debug、info 方法附加的属性都被分组到了 user 中。</p>
+<h3 id="14-实现-sloglogvaluer-接口隐藏敏感信息">14. 实现 slog.LogValuer 接口，隐藏敏感信息</h3>
+<p>有时候，我们可能要在日志中记录某个模型。</p>
+<p>比如这里有一个 User 模型：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ID</span>       <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;id&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Name</span>     <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;name&#34;`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Password</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;password&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>如果直接将 User 实例对象传给 slog 进行记录，那么 password 属性也会被记录，这通常并不是我们想要的。</p>
+<p>在使用 <code>slog</code> 以前，我的做法一般是为 <code>User</code> 模型定义一个 <code>SecureString</code> 方法，然后返回脱敏后的字符串，这样在记录日志时，可以将 <code>user.SecureString()</code> 结果传给日志记录器。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">u</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">User</span>) <span style="color:#a6e22e">SecureString</span>() <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">u</span>.<span style="color:#a6e22e">Password</span> = <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">u</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">res</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>不过，<code>slog</code> 为我们提供了 <code>slog.LogValuer</code> 接口，一个对象只要实现这个接口，就可以直接传递给 <code>slog</code> 进行记录。
+<code>slog.LogValuer</code> 接口定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">LogValuer</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LogValue</span>() <span style="color:#a6e22e">Value</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>所以，我们可以为 <code>User</code> 实现一个 <code>LogValue</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// LogValue implements slog.LogValuer interface</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// slog.Value 不可比较: https://jianghushinian.cn/2024/06/15/how-to-make-structures-incomparable-in-go/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">u</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">User</span>) <span style="color:#a6e22e">LogValue</span>() <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Value</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">GroupValue</span>(
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;id&#34;</span>, <span style="color:#a6e22e">u</span>.<span style="color:#a6e22e">ID</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;name&#34;</span>, <span style="color:#a6e22e">u</span>.<span style="color:#a6e22e">Name</span>),
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>LogValue</code> 方法返回 <code>slog.Value</code> 类型。</p>
+
+
+
+  <blockquote>
+    <p>NOTE:
+slog.Value 类型不可比较，</p>
+  </blockquote>
+
+<p>现在，我们直接将 <code>User</code> 实例传递给 slog 的日志记录方法看看效果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">AddSource</span>:   <span style="color:#66d9ef">true</span>,            <span style="color:#75715e">// 记录日志位置</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span>:       <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>, <span style="color:#75715e">// 设置日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">nil</span>,
+</span></span><span style="display:flex;"><span>}))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">user</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">User</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ID</span>:       <span style="color:#ae81ff">123</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Name</span>:     <span style="color:#e6db74">&#34;jianghushinian&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Password</span>: <span style="color:#e6db74">&#34;pass&#34;</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;user1&#34;</span>, <span style="color:#a6e22e">user</span>)  <span style="color:#75715e">// *User 未实现 slog.LogValuer 接口</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;user2&#34;</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">user</span>) <span style="color:#75715e">// User 未实现 slog.LogValuer 接口，所以无法隐藏敏感信息</span>
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:38:03.64827+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">225</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user1&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">123</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;jianghushinian&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:38:03.648291+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">226</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;user2&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">123</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;jianghushinian&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;password&#34;</span>: <span style="color:#e6db74">&#34;pass&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>值得注意的是，这里我为指针类型 *User 实现了 slog.LogValuer 接口，但值类型 User 并没有实现 slog.LogValuer 接口。所以记录日志时 User 实例指针可以隐藏 password，但 User 实例并不能。</p>
+<h2 id="slog-是如何设计的">slog 是如何设计的</h2>
+<p>slog 是 Go 日志生态中的后起之秀，其设计之初可以参考的流行日志库有很多，比如 logrus、zap、zerolog 等。所以我们能在 slog 中看到其他日志库的影子，尤其是 zap。</p>
+<p>slog 核心组件有 3 个，分别是 Logger、Record 以及 Handler。</p>
+<p>Logger 是一个结构体，面向用户侧，其提供了 Debug、Info 等方法用于记录日志，定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">handler</span> <span style="color:#a6e22e">Handler</span> <span style="color:#75715e">// for structured logging</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Debug logs at [LevelDebug].</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelDebug</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// DebugContext logs at [LevelDebug] with the given context.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">DebugContext</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">LevelDebug</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Info logs at [LevelInfo].</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// InfoContext logs at [LevelInfo] with the given context.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">InfoContext</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">Level</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pc</span> <span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">internal</span>.<span style="color:#a6e22e">IgnorePC</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pcs</span> [<span style="color:#ae81ff">1</span>]<span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// skip [runtime.Callers, this function, this function&#39;s caller]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Callers</span>(<span style="color:#ae81ff">3</span>, <span style="color:#a6e22e">pcs</span>[:])
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">pc</span> = <span style="color:#a6e22e">pcs</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewRecord</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>(), <span style="color:#a6e22e">level</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">pc</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ctx</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Handler</span>().<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>可以发现，Logger 结构体定义非常简单，其内部唯一一个属性就是 Handler。</p>
+<p>Record 是一条日志条目，一个 Record 实例就代表了一条日志记录，定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// A Record holds information about a log event.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Record</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The time at which the output method (Log, Info, etc.) was called.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Time</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Time</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The log message.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Message</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The level of the event.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Level</span> <span style="color:#a6e22e">Level</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>其中 Time 是当前这条日志记录的时间，Message 是日志消息，Level 是日志级别。</p>
+<p>而 Handler 是一个接口，用于处理 Logger 产生的日志条目 Record，定义如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// A Handler handles log records produced by a Logger.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Handler</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Enabled reports whether the handler handles records at the given level.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">Level</span>) <span style="color:#66d9ef">bool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Handle handles the Record.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">Record</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// WithAttrs returns a new Handler whose attributes consist of</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// both the receiver&#39;s attributes and the arguments.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">WithAttrs</span>(<span style="color:#a6e22e">attrs</span> []<span style="color:#a6e22e">Attr</span>) <span style="color:#a6e22e">Handler</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// WithGroup returns a new Handler with the given group appended to</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the receiver&#39;s existing groups.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">WithGroup</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">Handler</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>slog 3 大核心组件导图如下：
+<img src="image-1.png" alt="alt text"></p>
+<p>这就是 slog 最核心的设计了。</p>
+<p>从 slog 架构逻辑上讲，其中 Logger 被称为前端，Handler 被称为后端，而 Record 就是连接二者的桥梁。</p>
+<p>记录一条日志流程如下：
+<img src="image-2.png" alt="alt text"></p>
+<p>用户调用前端 Logger 提供的日志记录方法 Info 记录一条日志，Info 方法会调用一个私有方法 log，log 方法内部会使用 NewRecord 创建一个日志条目 Record，最终，Logger 会调用其嵌入的 Handler 对象的 Handle 方法解析 Record 并执行日志记录逻辑。</p>
+<h2 id="定制-logger">定制 Logger</h2>
+<p>了解了 slog 的日志设计，接下来我们就可以基于 slog.Logger 定制属于自己的 Logger 对象了。</p>
+<p>我们要自定义的 Logger 对象需要支持 3 个功能：自定义日志级别、动态调整日志级别、以及正确输出日志位置。</p>
+<h3 id="1-自定义日志级别">1. 自定义日志级别</h3>
+<p>自定义的 Logger 对象首先要支持自定义日志级别：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Level</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelDebug</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelTrace</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>) <span style="color:#75715e">// 自定义日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelInfo</span>  = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelInfo</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelWarn</span>  = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelWarn</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelError</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelError</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>这里我们为 slog.Level 定义了一个别名 Level，并且在 LevelDebug 以及 LevelInfo 之间自定义了一个日志级别，其值为 -2。</p>
+<p>因为 LevelDebug 值为 -4，LevelInfo 值为 0，所以我们最多可以在二者之间自定义 3 个日志级别 -3、-2、-1。</p>
+<h3 id="2-动态设置日志级别">2. 动态设置日志级别</h3>
+<p>自定义 Logger 结构体对象如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>   <span style="color:#f92672">*</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Logger</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lvl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelVar</span> <span style="color:#75715e">// 用来动态调整日志级别</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Logger 内部包含了 *slog.Logger 对象，以及 *slog.LevelVar 对象。</p>
+<p>其中 *slog.LevelVar 类型支持通过 *slog.LevelVar.Set(Level) 动态调整日志级别。</p>
+<p>Logger 构造函数如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lvl</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelVar</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lvl</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">level</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">AddSource</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Level</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">lvl</span>, <span style="color:#75715e">// 支持动态设置日志级别</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 修改日志中的 Attr 键值对（即日志记录中附加的 key/value）</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">groups</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span>) <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Key</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelKey</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">level</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">Any</span>().(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">levelLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">level</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">level</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">LevelTrace</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// NOTE: 如果不设置，默认日志级别打印为 &#34;level&#34;:&#34;DEBUG+2&#34;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">levelLabel</span> = <span style="color:#e6db74">&#34;TRACE&#34;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">StringValue</span>(<span style="color:#a6e22e">levelLabel</span>)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    }))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Logger</span>{<span style="color:#a6e22e">l</span>: <span style="color:#a6e22e">h</span>, <span style="color:#a6e22e">lvl</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">lvl</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>自定义 <code>Logger</code> 使用 <code>JSONHandler</code> 作为默认的 <code>Handler</code>，这里终于用上了 <code>ReplaceAttr</code> 属性。</p>
+<p><code>*slog.HandlerOptions</code> 的 <code>ReplaceAttr</code> 属性接收一个函数，第一个参数是日志分组 <code>groups</code>，即我们通过 <code>slog.Group</code> 指定的组，第二个参数是 <code>slog.Attr</code> 类型，它其实就是日志条目中包含的所有附加属性 <code>key/value</code>。</p>
+<p>所以，其实每记录一条日志，都会多次调用这个方法，并将日志条目对应的分组和属性传递进来，方便我们进行修改，并返回最终修改后的属性。</p>
+<p>这也就给了我们一个机会，可以判断当前日志条目的级别，而自定义日志级别输出结果如何，完全掌握在我们自己手中。</p>
+<p>根据前文的示例讲解，你应该也能发现，日志条目中的时间和级别等属性，都是 <code>slog</code> 自动加上去的。而属性的 <code>key</code> 其实被定义为了常量：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Keys for &#34;built-in&#34; attributes.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// TimeKey is the key used by the built-in handlers for the time</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// when the log method is called. The associated Value is a [time.Time].</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">TimeKey</span> = <span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// LevelKey is the key used by the built-in handlers for the level</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// of the log call. The associated value is a [Level].</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelKey</span> = <span style="color:#e6db74">&#34;level&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// MessageKey is the key used by the built-in handlers for the</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// message of the log call. The associated value is a string.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">MessageKey</span> = <span style="color:#e6db74">&#34;msg&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// SourceKey is the key used by the built-in handlers for the source file</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// and line of the log call. The associated value is a *[Source].</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">SourceKey</span> = <span style="color:#e6db74">&#34;source&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>slog 内置了这 4 个常量作为属性的 key，所以在 ReplaceAttr 方法中，我们可以通过 if a.Key == slog.LevelKey 判断这个属性是否为日志级别。</p>
+<p>如果是日志级别，并且日志级别为自定义的 LevelTrace，则设置其字符串形式为 TRACE。</p>
+<p>而动态调整日志级别其实是 slog 自带的功能，我们只需要代理一下 *slog.LevelVar.Set 方法即可：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// SetLevel 动态调整日志级别</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">SetLevel</span>(<span style="color:#a6e22e">level</span> <span style="color:#a6e22e">Level</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">lvl</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">level</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="3-设置-caller-skip">3. 设置 caller skip</h3>
+<p>自定义 Logger 还要解决一个重要问题。</p>
+<p>不知道你有没有注意，前文在介绍 slog是如何设计的 时候，给出的 s<code>log.Logger</code> 源码定义中，不管是 <code>Debug</code> 还是 <code>Info</code> 方法，其实它们内部都调用了 <code>slog.Logger.log</code> 方法。所以 <code>slog.Logger.log</code> 方法是 <code>slog.Logger</code> 的核心方法。</p>
+<p>再次回顾下 <code>slog.Logger.log</code> 方法的定义：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// log is the low-level logging method for methods that take ...any.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// It must always be called directly by an exported logging method</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// or function, because it uses a fixed call depth to obtain the pc.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">Level</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pc</span> <span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">internal</span>.<span style="color:#a6e22e">IgnorePC</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pcs</span> [<span style="color:#ae81ff">1</span>]<span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// skip [runtime.Callers, this function, this function&#39;s caller]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Callers</span>(<span style="color:#ae81ff">3</span>, <span style="color:#a6e22e">pcs</span>[:])
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">pc</span> = <span style="color:#a6e22e">pcs</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewRecord</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>(), <span style="color:#a6e22e">level</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">pc</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ctx</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Handler</span>().<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个方法中，先通过 <code>if !l.Enabled(ctx, level)</code> 判断当前日志级别是否启用，如果没启用则丢弃这条日志，否则继续执行。</p>
+<p>这里有一行重点代码 <code>runtime.Callers(3, pcs[:])</code>，这行是专门用来准确记录日志位置的，在构造 <code>Handler</code> 时如果传入的 <code>*slog.HandlerOptions</code> 对象开启了 <code>AddSource</code> 选项，就会使用这里的逻辑记录日志的正确位置。</p>
+<p><code>runtime.Callers</code> 能够获取调用堆栈的程序计数器，3 表示跳过前 3 个调用者，包括 <code>runtime.Callers</code> 自身、当前的 <code>log</code> 函数和它的直接调用者 <code>Debug</code>、<code>Info</code> 等。</p>
+<p>遗憾的是，这里 3 是写死的魔法数字，不是通过参数传递进来的。因为我们还会对 <code>slog</code> 的日志记录函数进行包装，所以，我们自定义的 <code>Logger</code> 对象在记录日志时无法获得准确的日志位置。</p>
+<p>比如定义 Debug 方法如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 不会走 *customlog.Logger.log() 调用，会走 *slog.Logger.log() 调用</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里直接代理到 <code>*slog.Logger.Debug</code> 方法。</p>
+<p>现在如果你使用 <code>New</code> 函数创建一个自定义 <code>Logger</code> 对象，然后调用 <code>*Logger.Debug</code> 方法记录日志，将得到错误的日志位置。</p>
+<p>为了解决这个问题，正确的做法是，我们可以重写 <code>slog.Logger.log</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pc</span> <span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pcs</span> [<span style="color:#ae81ff">1</span>]<span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// skip [runtime.Callers, this function, this function&#39;s caller]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// NOTE: 这里修改 skip 为 4，*slog.Logger.log 源码中 skip 为 3</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Callers</span>(<span style="color:#ae81ff">4</span>, <span style="color:#a6e22e">pcs</span>[:])
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pc</span> = <span style="color:#a6e22e">pcs</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewRecord</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>(), <span style="color:#a6e22e">level</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">pc</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ctx</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Handler</span>().<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里几乎是 <code>slog.Logger.log</code> 方法的拷贝，只不过将 <code>runtime.Callers(3, pcs[:])</code> 中的 3 换成了 4。</p>
+<p>因为我们自定义的日志记录方法包装了 <code>slog.Logger</code> 对应的日志记录方法，这就多了一层调用，所以 <code>runtime.Callers</code> 的 <code>skip</code> 参数值就需要加 1。</p>
+
+
+
+  <blockquote>
+    <p>NOTE:
+你可能纠结于 if !internal.IgnorePC { 这个判断条件被我们忽略了，没关系，这个判断实际上是为了在性能测试时关闭记录日志位置的功能，以此提升性能。所以，关闭忽略它并不影响我们的程序功能。</p>
+  </blockquote>
+
+<p>然后定义几个常用的日志记录方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// l.l.Info(msg, args...)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Trace 自定义的日志级别</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Trace</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelTrace</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// l.l.Warn(msg, args...)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelWarn</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// l.l.Error(msg, args...)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelError</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>现在自定义 <code>Logger</code> 对象暴露的顶层方日志记录方法，都会调用我们自定义的 <code>*Logger.log</code> 方法，而非 <code>*slog.Logger.log </code>方法。也就解决了日志记录位置不准确的问题。</p>
+<h3 id="4-完整-logger-代码实现">4. 完整 Logger 代码实现</h3>
+<p>至此，我们得到了自定义日志包的完整代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">customlog</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log/slog&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;runtime&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Level</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelDebug</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelTrace</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>) <span style="color:#75715e">// 自定义日志级别</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelInfo</span>  = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelInfo</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelWarn</span>  = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelWarn</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">LevelError</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelError</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>   <span style="color:#f92672">*</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Logger</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lvl</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelVar</span> <span style="color:#75715e">// 用来动态调整日志级别</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lvl</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelVar</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lvl</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">level</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">AddSource</span>: <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Level:     level, // 静态设置日志级别</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Level</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">lvl</span>, <span style="color:#75715e">// 支持动态设置日志级别</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 修改日志中的 Attr 键值对（即日志记录中附加的 key/value）</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ReplaceAttr</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">groups</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span>) <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Key</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelKey</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">level</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">Any</span>().(<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">levelLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">level</span>.<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">level</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">LevelTrace</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// NOTE: 如果不设置，默认日志级别打印为 &#34;level&#34;:&#34;DEBUG+2&#34;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#a6e22e">levelLabel</span> = <span style="color:#e6db74">&#34;TRACE&#34;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span> = <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">StringValue</span>(<span style="color:#a6e22e">levelLabel</span>)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// NOTE: 可以在这里修改时间输出格式</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// if a.Key == slog.TimeKey {</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//     if t, ok := a.Value.Any().(time.Time); ok {</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//         a.Value = slog.StringValue(t.Format(time.DateTime))</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">//     }</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// }</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    }))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Logger</span>{<span style="color:#a6e22e">l</span>: <span style="color:#a6e22e">h</span>, <span style="color:#a6e22e">lvl</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">lvl</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// SetLevel 动态调整日志级别</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">SetLevel</span>(<span style="color:#a6e22e">level</span> <span style="color:#a6e22e">Level</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">lvl</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">level</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 不会走 *customlog.Logger.log() 调用，会走 *slog.Logger.log() 调用</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelInfo</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Trace 自定义的日志级别</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Trace</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelTrace</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelWarn</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">LevelError</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">Log</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// log is the low-level logging method for methods that take ...any.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// It must always be called directly by an exported logging method</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// or function, because it uses a fixed call depth to obtain the pc.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Logger</span>) <span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pc</span> <span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pcs</span> [<span style="color:#ae81ff">1</span>]<span style="color:#66d9ef">uintptr</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// skip [runtime.Callers, this function, this function&#39;s caller]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// NOTE: 这里修改 skip 为 4，*slog.Logger.log 源码中 skip 为 3</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Callers</span>(<span style="color:#ae81ff">4</span>, <span style="color:#a6e22e">pcs</span>[:])
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pc</span> = <span style="color:#a6e22e">pcs</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewRecord</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>(), <span style="color:#a6e22e">level</span>, <span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">pc</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ctx</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Handler</span>().<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>使用示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/jianghushinian/blog-go-example/log/slog/customlog&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">customlog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">customlog</span>.<span style="color:#a6e22e">LevelDebug</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;custom debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Trace</span>(<span style="color:#e6db74">&#34;custom trace message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;custom info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">SetLevel</span>(<span style="color:#a6e22e">customlog</span>.<span style="color:#a6e22e">LevelInfo</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#e6db74">&#34;custom debug message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Trace</span>(<span style="color:#e6db74">&#34;custom trace message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;custom info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:39:28.563559+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;DEBUG&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;github.com/jianghushinian/blog-go-example/log/slog/customlog.(*Logger).Debug&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/customlog/customlog.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">72</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;custom debug message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:39:28.563785+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;TRACE&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">233</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;custom trace message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:39:28.563815+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">234</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;custom info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">动态调整日志级别以后输出</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:39:28.56384+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;source&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;function&#34;</span>: <span style="color:#e6db74">&#34;main.main&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;file&#34;</span>: <span style="color:#e6db74">&#34;/workspace/projects/blog-go-example/log/slog/main.go&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;line&#34;</span>: <span style="color:#ae81ff">239</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;custom info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>为了对比效果，<code>Debug</code> 方法并没有改为调用自定义 <code>log </code>方法，依旧是被代理到 <code>*slog.Logger.Debug</code> 方法。</p>
+<p>可以发现，<code>Debug</code> 记录的日志输出位置是错误的，并不是 <code>l.Debug(&quot;custom debug message&quot;, &quot;hello&quot;, &quot;world&quot;)</code> 这行代码的位置，而是 <code>Debug </code>定义的位置。</p>
+<p><code>Trace</code> 和 <code>Info</code> 日志级别都能被正确记录。</p>
+<p>特别强调 <code>Trace</code> 日志中输出了 <code>&quot;level&quot;: &quot;TRACE&quot;</code> 属性键值对。如果我们没有在 <code>ReplaceAttr</code> 方法中修改 <code>levelLabel</code> 的字符串形式，我们将会得到 <code>&quot;level&quot;:&quot;DEBUG+2&quot;</code>，即这个日志级别 <code>slog</code> 不认识，但它知道其值比 <code>LevelDebug</code> 大 2。因为 <code>LevelDebug</code> 值为 -4，<code>LevelTrace</code> 值为 -2（为了加深理解，你可以注释掉相关代码，再执行下示例程序，看看效果）。</p>
+<p>当我们使用 <code>l.SetLevel(customlog.LevelInfo)</code>动态调整日志级别以后，仅 <code>Info</code> 级别的日志会被输出。</p>
+<p>看来我们自定义的 Logger 实现完成了它的 3 个使命。</p>
+<h2 id="自定义-handler">自定义 Handler</h2>
+<p>既然讲解了如何自定义 <code>slog</code> 的前端 <code>Logger</code>，我们不妨看一下如何自定义 <code>slog</code> 的后端 <code>Handler</code>。</p>
+<p>根据前文的讲解，我们知道 <code>Handler</code> 是一个接口，回顾下其定义：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// A Handler handles log records produced by a Logger.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Handler</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Enabled reports whether the handler handles records at the given level.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">Level</span>) <span style="color:#66d9ef">bool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Handle handles the Record.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">Record</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// WithAttrs returns a new Handler whose attributes consist of</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// both the receiver&#39;s attributes and the arguments.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">WithAttrs</span>(<span style="color:#a6e22e">attrs</span> []<span style="color:#a6e22e">Attr</span>) <span style="color:#a6e22e">Handler</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// WithGroup returns a new Handler with the given group appended to</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// the receiver&#39;s existing groups.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">WithGroup</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">Handler</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>既然是接口，那么我们自定义的 <code>Handler</code> 其实只要实现这个接口就行了。</p>
+<p>自定义 <code>Handler</code> 代码实现如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">customlog</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;io&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log/slog&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Handler 自定义日志后端 slog.Handler</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Handler</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Handler</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// NewHandler 创建新的日志后端 handler</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewHandler</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">HandlerOptions</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">Handler</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Handler</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">Handler</span>: <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">opts</span>),
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Enabled 当前日志级别是否开启</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Handler</span>) <span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">level</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Level</span>) <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Handler</span>.<span style="color:#a6e22e">Enabled</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">level</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Handle 处理日志记录，仅在 Enabled() 返回 true 时才会被调用</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Handler</span>) <span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">record</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Record</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">record</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#e6db74">&#34;customlog&#34;</span>, <span style="color:#e6db74">&#34;handler&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Handler</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">record</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// WithAttrs 从现有的 handler 创建一个新的 handler，并将新增属性附加到新的 handler</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Handler</span>) <span style="color:#a6e22e">WithAttrs</span>(<span style="color:#a6e22e">attrs</span> []<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span>) <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Handler</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Handler</span>.<span style="color:#a6e22e">WithAttrs</span>(<span style="color:#a6e22e">attrs</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// WithGroup 从现有的 handler 创建一个新的 handler，并将指定分组附加到新的 handler</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Handler</span>) <span style="color:#a6e22e">WithGroup</span>(<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Handler</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Handler</span>.<span style="color:#a6e22e">WithGroup</span>(<span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在这里，为了示例足够简单，我并没有做太多的工作，自定义的 <code>Handler</code> 仅代理了 <code>*slog.JSONHandler</code>。并在 <code>Handle</code> 方法中对日志条目 <code>Record</code> 附加了一对属性 <code>record.Add(&quot;customlog&quot;, &quot;handler&quot;)</code>。</p>
+<p>现在，这个自定义 <code>Handler</code> 就可以使用了：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/jianghushinian/blog-go-example/log/slog/customlog&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">customlog</span>.<span style="color:#a6e22e">NewHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#66d9ef">nil</span>))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;info message&#34;</span>, <span style="color:#e6db74">&#34;hello&#34;</span>, <span style="color:#e6db74">&#34;world&#34;</span>)
+</span></span></code></pre></div><p>我们直接将构造的自定义 <code>Handler</code> 传递给 <code>slog.New</code>，得到一个新的 <code>*slog.Logger</code> 对象，然后用其记录一条日志。</p>
+<p>执行示例代码，输出结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> <span style="color:#a6e22e">main</span>.<span style="color:#66d9ef">go</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>: <span style="color:#e6db74">&#34;2024-06-23T10:40:31.509387+08:00&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;level&#34;</span>: <span style="color:#e6db74">&#34;INFO&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;info message&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;hello&#34;</span>: <span style="color:#e6db74">&#34;world&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;customlog&#34;</span>: <span style="color:#e6db74">&#34;handler&#34;</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>没错，就是这么简单，我们实现了自定义 <code>slog</code> 的后端 <code>Handler</code>。</p>
+<h2 id="总结">总结</h2>
+<p>本文对 slog 的常用 API 进行了演示讲解。比如附加属性、结构化日志、属性分组等。</p>
+<p>接下来我为你介绍了 slog 是如何设计的，slog 包含 3 大核心对象：Logger、Record、Handler。Logger 又被称为 前端，Handler 被称为 后端，而 Record 用来表示一条日志。</p>
+<p>前端 Logger 直接面向用户侧，我们可以对其进行二次封装，来定制自己的用户 API。</p>
+<p>后端 Handler 可以统一日志处理接口，我们也可以在自定义的 Handler 中很方便的集成如 zap、zerolog 等第三方日志库。你可以在 <a href="https://tip.golang.org/wiki/Resources-for-slog" target="_blank">Go Wiki: Resources for slog
+</a>
+ 这个列表找到一些灵感。</p>
+
+
+        
+      </section>
+
+      
+      <div class="divider w-full"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4 w-full">
+        
+        <div></div>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/cicd/tekton/" title="Tekton">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Tekton</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  
+  <div class="hidden lg:flex lg:flex-col lg:items-end lg:col-span-1">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#slog-快速入门">slog 快速入门</a>
+      <ul>
+        <li><a href="#1-快速开始">1. 快速开始</a></li>
+        <li><a href="#2-附加属性">2. 附加属性</a></li>
+        <li><a href="#3-context-版本日志方法">3. Context 版本日志方法</a></li>
+        <li><a href="#3-修改日志级别">3. 修改日志级别</a></li>
+        <li><a href="#4-获取当前日志级别">4. 获取当前日志级别</a></li>
+        <li><a href="#5-结构化日志">5. 结构化日志</a></li>
+        <li><a href="#6-使用自定义-logger-替换默认-logger">6. 使用自定义 logger 替换默认 logger</a></li>
+        <li><a href="#7-将-sloglogger-转换为-loglogger">7. 将 slog.Logger 转换为 log.Logger</a></li>
+        <li><a href="#8-使用宽松类型可能出现不匹配的属性键值对">8. 使用宽松类型可能出现不匹配的属性键值对</a></li>
+        <li><a href="#9-使用强类型缓解可能出现不匹配的属性键值对">9. 使用强类型缓解可能出现不匹配的属性键值对</a></li>
+        <li><a href="#10-利用-logattrs-限制必须使用强类型避免出现-badkey">10. 利用 LogAttrs 限制必须使用强类型，避免出现 !BADKEY</a></li>
+        <li><a href="#11-属性分组">11. 属性分组</a></li>
+        <li><a href="#12-使用子-logger">12. 使用子 logger</a></li>
+        <li><a href="#13-为子-logger-属性分组">13. 为子 logger 属性分组</a></li>
+        <li><a href="#14-实现-sloglogvaluer-接口隐藏敏感信息">14. 实现 slog.LogValuer 接口，隐藏敏感信息</a></li>
+      </ul>
+    </li>
+    <li><a href="#slog-是如何设计的">slog 是如何设计的</a></li>
+    <li><a href="#定制-logger">定制 Logger</a>
+      <ul>
+        <li><a href="#1-自定义日志级别">1. 自定义日志级别</a></li>
+        <li><a href="#2-动态设置日志级别">2. 动态设置日志级别</a></li>
+        <li><a href="#3-设置-caller-skip">3. 设置 caller skip</a></li>
+        <li><a href="#4-完整-logger-代码实现">4. 完整 Logger 代码实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#自定义-handler">自定义 Handler</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>没什么想介绍的，一个很大众的全栈码农&hellip;</p>
+<p>喜欢代码，车，马，真的是 🐎</p>
+<p>讨厌别人让我给自己的代码写文档
+最厌烦的是别人的程序没有留下文档</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">目标</div>
+
+        <div class="prose dark:prose-invert">
+          <p>学习 K8S 源码！加油！</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme =  null 
+</script>
+
+
+
+
+
+  
+  
+  <script src = "/js/imagesloaded.pkgd.min.js"></script>
+  <script src = "/js/masonry.pkgd.min.js"></script>
+
+  
+  
+    
+  
+  <script src="/js/grid.min.js"></script>
+
+
+
+
+  
+
+<script src="/js/main.min.js"></script>
+
+    
+
+
+
+
+
+
+
+
+<script src = "/js/luxon@1.26.0.js"></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+
+<script type="module">
+  import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+  mediumZoom('#dream-single-post-content img', {
+    background: 'oklch(var(--b1))',
+    margin: 24,
+  })
+</script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

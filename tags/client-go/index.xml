@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Client-Go on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/client-go/</link>
+    <description>Recent content in Client-Go on MoonLightMaze’s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Sat, 03 Jun 2023 14:11:02 +0800</lastBuildDate>
+    <atom:link href="https://moonlightmazed.github.io/tags/client-go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Client-go</title>
+      <link>https://moonlightmazed.github.io/posts/clientgo/base/</link>
+      <pubDate>Sat, 03 Jun 2023 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/clientgo/base/</guid>
+      <description>&lt;h2 id=&#34;client-go客户端分类&#34;&gt;client-go客户端分类&lt;/h2&gt;&#xA;&lt;p&gt;client-go支持4种Client客户端对象与Kubernetes API Server交互的方式，Client交互对象如图所示。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;index.assets/image-20250411213740978.png&#34; alt=&#34;image-20250411213740978&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;code&gt;RESTClient&lt;/code&gt;是最基础的客户端。RESTClient对HTTP Request进行了封装，实现了RESTful风格的API。ClientSet、DynamicClient及DiscoveryClient客户端都是基于RESTClient实现的。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

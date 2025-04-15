@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRPC | MoonLightMaze’s Blog</title>
+
+    
+  
+    <link href="/img/favicon.ico" rel="icon" type="image/x-icon" />
+  
+
+
+<link rel="canonical" href="https://moonlightmazed.github.io/posts/grpc/grpc/" />
+
+
+
+<meta name="author" content="MoonlightMaze" />
+<meta name="description" content="gRPC 是一个高性能、开源、通用的RPC框架，由Google推出，基于HTTP2协议标准设计开发，默认采用Protocol Buffers数据序列化协议，支持多种开发语言。gRPC提供了一种简单的方法来精确的定义服务，并且为客户端和服务端自动生成可靠的功能库。" />
+
+
+<meta name="keywords" content="GRPC">
+
+
+
+<meta name="generator" content="Hugo 0.146.4">
+
+
+<meta property="og:url" content="https://moonlightmazed.github.io/posts/grpc/grpc/">
+  <meta property="og:site_name" content="MoonLightMaze’s Blog">
+  <meta property="og:title" content="GRPC">
+  <meta property="og:description" content="gRPC 是一个高性能、开源、通用的RPC框架，由Google推出，基于HTTP2协议标准设计开发，默认采用Protocol Buffers数据序列化协议，支持多种开发语言。gRPC提供了一种简单的方法来精确的定义服务，并且为客户端和服务端自动生成可靠的功能库。">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-08-15T14:22:11+08:00">
+    <meta property="article:modified_time" content="2023-08-15T14:22:11+08:00">
+    <meta property="article:tag" content="GRPC">
+    <meta property="og:image" content="https://moonlightmazed.github.io/posts/grpc/grpc/image.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://moonlightmazed.github.io/posts/grpc/grpc/image.png">
+  <meta name="twitter:title" content="GRPC">
+  <meta name="twitter:description" content="gRPC 是一个高性能、开源、通用的RPC框架，由Google推出，基于HTTP2协议标准设计开发，默认采用Protocol Buffers数据序列化协议，支持多种开发语言。gRPC提供了一种简单的方法来精确的定义服务，并且为客户端和服务端自动生成可靠的功能库。">
+
+
+
+
+  
+
+<link rel="stylesheet" href="/css/output.min.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+
+    
+    <script defer src = "/js/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/avatar.webp" alt="MoonLightMaze’s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="https://moonlightmazed.github.io/" class="text-lg font-semibold cursor-pointer">
+          MoonLightMaze’s Blog
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">代码写的越急，程序跑得越慢</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/" target="" title="home">
+    
+    <ion-icon name="home"></ion-icon>
+    
+    home
+  </a>
+</li>
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
+</li>
+
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    
+    <ion-icon name="logo-github"></ion-icon>
+    
+    GitHub
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/" target="" title="home">
+    <ion-icon class="group-hover:text-primary-content" name="home"></ion-icon>
+  </a>
+  
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    <ion-icon class="group-hover:text-primary-content" name="logo-github"></ion-icon>
+  </a>
+  
+
+
+
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+
+<div class="lg:grid lg:grid-cols-5 gap-4 mt-4 px-4">
+  
+  <div class="lg:col-span-4">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert w-full" id="dream-single-post-main" itemscope
+      itemtype="http://schema.org/Article" style="margin-right: 30px;max-width: 100% !important;width: 100% !important; ">
+      
+  <meta itemprop="name" content="GRPC">
+  <meta itemprop="description" content="gRPC 是一个高性能、开源、通用的RPC框架，由Google推出，基于HTTP2协议标准设计开发，默认采用Protocol Buffers数据序列化协议，支持多种开发语言。gRPC提供了一种简单的方法来精确的定义服务，并且为客户端和服务端自动生成可靠的功能库。">
+  <meta itemprop="datePublished" content="2023-08-15T14:22:11+08:00">
+  <meta itemprop="dateModified" content="2023-08-15T14:22:11+08:00">
+  <meta itemprop="wordCount" content="2503">
+  <meta itemprop="image" content="https://moonlightmazed.github.io/posts/grpc/grpc/image.png">
+  <meta itemprop="keywords" content="GRPC">
+
+      <header>
+        <h1 itemprop="headline">GRPC</h1>
+        <p class="text-sm">
+          
+          <span data-format="luxon">2023-08-15T14:22:11&#43;08:00</span>
+          
+
+          | <span>5分钟阅读</span>
+
+          
+          | <span>更新于
+            
+            <span data-format="luxon">2023-08-15T14:22:11&#43;08:00</span>
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">MoonlightMaze</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      
+      <section id="dream-single-post-content" itemprop="articleBody" class="w-full" style="margin-top: 40px !important;">
+        
+
+        <h2 id="grpc概述">GRPC概述</h2>
+<h3 id="http请求示例">HTTP请求示例</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Server</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">router</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Default</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">GET</span>(<span style="color:#e6db74">&#34;/index&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">name</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Query</span>(<span style="color:#e6db74">&#34;name&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">JSON</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>, <span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">H</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#e6db74">&#34;my name is &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">Run</span>(<span style="color:#e6db74">&#34;localhost:8080&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// client</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;encoding/json&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;io&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Result</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Message</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;message&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#e6db74">&#34;http://localhost:8080/index?name=lili&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;请求不正确：%v&#34;</span>, <span style="color:#a6e22e">err</span>))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Body</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">ReadAll</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Body</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;读取Body不正确：%v&#34;</span>, <span style="color:#a6e22e">err</span>))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">result</span> <span style="color:#a6e22e">Result</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>(<span style="color:#a6e22e">b</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">result</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(string(<span style="color:#a6e22e">b</span>))
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;json解析失败：%v&#34;</span>, <span style="color:#a6e22e">err</span>))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">result</span>.<span style="color:#a6e22e">Message</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="基本概念">基本概念</h3>
+<ul>
+<li><strong>Protocol Buffers（Protobuf）</strong>：这是一种用于序列化结构化数据的语言无关、平台无关的机制。在 gRPC 中，通常使用 Protobuf 来定义服务接口和消息类型。</li>
+<li><strong>服务定义</strong>：通过 <code>.proto</code> 文件定义服务接口和方法，这些方法可以在客户端和服务器之间进行远程调用。</li>
+<li><strong>Stub 生成</strong>：使用 <code>protoc</code> 编译器和 gRPC 插件生成客户端和服务器的代码桩（stub），这些代码桩封装了底层的网络通信细节。</li>
+<li><strong>通信协议</strong>：gRPC 使用 HTTP/2 作为传输协议，具有二进制分帧、多路复用、头部压缩等特性，能够提供高效的通信。</li>
+</ul>
+<h3 id="安装protoc编译器">安装protoc编译器</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 安装 protoc 编译器</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 从 https://github.com/protocolbuffers/protobuf/releases 下载对应系统的版本并安装</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 安装 Go 语言的 gRPC 插件</span>
+</span></span><span style="display:flex;"><span>go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+</span></span><span style="display:flex;"><span>go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+</span></span></code></pre></div><h3 id="grpc示例">GRPC示例</h3>
+<h4 id="1-定义服务">1. 定义服务</h4>
+<p>创建一个 <code>.proto</code> 文件，定义服务接口和消息类型。例如，创建一个名为 <code>hello.proto</code> 的文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">syntax</span> = <span style="color:#e6db74">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">option</span> <span style="color:#a6e22e">go_package</span>=<span style="color:#e6db74">&#34;pb/helloworld&#34;</span>;   
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">helloworld</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义消息类型</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">HelloRequest</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">name</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">HelloResponse</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">message</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 定义服务</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">service</span> <span style="color:#a6e22e">Greeter</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 定义方法</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">SayHello</span> (<span style="color:#a6e22e">HelloRequest</span>) <span style="color:#a6e22e">returns</span> (<span style="color:#a6e22e">HelloResponse</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2-生成代码">2. 生成代码</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">protoc</span> <span style="color:#f92672">--</span><span style="color:#a6e22e">go_out</span>=. <span style="color:#f92672">--</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">grpc_out</span>=. <span style="color:#a6e22e">hello</span>.<span style="color:#a6e22e">proto</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">protoc</span> <span style="color:#f92672">--</span><span style="color:#a6e22e">go_out</span>=. <span style="color:#f92672">--</span><span style="color:#a6e22e">go_opt</span>=<span style="color:#a6e22e">paths</span>=<span style="color:#a6e22e">source_relative</span> <span style="color:#f92672">--</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">grpc_out</span>=. <span style="color:#f92672">--</span><span style="color:#66d9ef">go</span><span style="color:#f92672">-</span><span style="color:#a6e22e">grpc_opt</span>=<span style="color:#a6e22e">paths</span>=<span style="color:#a6e22e">source_relative</span> <span style="color:#a6e22e">helloworld</span><span style="color:#f92672">/</span><span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">proto</span>
+</span></span></code></pre></div><p>这将生成 <code>hello.pb.go</code> 和 <code>hello_grpc.pb.go</code> 两个文件，分别包含 Protobuf 消息的定义和 gRPC 服务的代码桩。</p>
+<h4 id="3-实现服务器">3. 实现服务器</h4>
+<p>创建一个 Go 文件，实现 <code>Greeter</code> 服务的 <code>SayHello</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/moonlightmazed/bs-grpc/cmd/proto/pb/helloworld&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Server</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">UnimplementedGreeterServer</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">SayHello</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">HelloRequets</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">HelloResponse</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">HelloResponse</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Message</span>: <span style="color:#e6db74">&#34;Hello &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Name</span>,
+</span></span><span style="display:flex;"><span>	}, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">lis</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Listen</span>(<span style="color:#e6db74">&#34;tcp&#34;</span>, <span style="color:#e6db74">&#34;localhost:8080&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">NewServer</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">RegisterGreeterServer</span>(<span style="color:#a6e22e">s</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Server</span>{})
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Serve</span>(<span style="color:#a6e22e">lis</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4-实现客户端">4. 实现客户端</h4>
+<p>创建另一个 Go 文件，实现客户端代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/moonlightmazed/bs-grpc/cmd/proto/pb/helloworld&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 创建gRPC连接</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">conn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Dial</span>(<span style="color:#e6db74">&#34;localhost:8080&#34;</span>, <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithInsecure</span>(), <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithBlock</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;did not connect: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 2. 生成客户端存根</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">client</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">NewGreeterClient</span>(<span style="color:#a6e22e">conn</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 3. 构造带超时的上下文</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">callCtx</span>, <span style="color:#a6e22e">callCancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithTimeout</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#ae81ff">3</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">callCancel</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 4. 执行RPC调用</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">SayHello</span>(<span style="color:#a6e22e">callCtx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">helloworld</span>.<span style="color:#a6e22e">HelloRequets</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;World&#34;</span>,
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;RPC调用失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;收到响应: %s&#34;</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Message</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="5-代码解释">5. 代码解释</h4>
+<ul>
+<li><strong>服务器端</strong>：
+<ul>
+<li>定义了一个 <code>server</code> 结构体，实现了 <code>Greeter</code> 服务的 <code>SayHello</code> 方法。</li>
+<li>创建一个 gRPC 服务器实例，并注册 <code>Greeter</code> 服务。</li>
+<li>监听指定端口，等待客户端连接。</li>
+</ul>
+</li>
+<li><strong>客户端</strong>：
+<ul>
+<li>连接到服务器。</li>
+<li>创建 <code>Greeter</code> 服务的客户端实例。</li>
+<li>发送 <code>HelloRequest</code> 消息，并接收 <code>HelloResponse</code> 消息。</li>
+</ul>
+</li>
+</ul>
+<h3 id="stream">stream</h3>
+<h4 id="1-proto文件">1. proto文件</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">syntax</span>=<span style="color:#e6db74">&#34;proto3&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">option</span> <span style="color:#a6e22e">go_package</span>=<span style="color:#e6db74">&#34;/pb/helloworld&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">helloworld</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">HelloRequets</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">name</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">HelloResponse</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">message</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">service</span> <span style="color:#a6e22e">Greeter</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">SayHelloClientStream</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">HelloRequets</span>)<span style="color:#a6e22e">returns</span>(<span style="color:#a6e22e">HelloResponse</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">SayHelloServerStream</span>(<span style="color:#a6e22e">HelloRequets</span>)<span style="color:#a6e22e">returns</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">HelloResponse</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">rpc</span> <span style="color:#a6e22e">SayHelloBothStream</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">HelloRequets</span>)<span style="color:#a6e22e">returns</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">HelloResponse</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2-服务端实现">2. 服务端实现</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;io&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pb</span> <span style="color:#e6db74">&#34;your_project/pb/helloworld&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">server</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">UnimplementedGreeterServer</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 客户端流式实现</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">server</span>) <span style="color:#a6e22e">SayHelloClientStream</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Greeter_SayHelloClientStreamServer</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">names</span> []<span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Recv</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">SendAndClose</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloResponse</span>{
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">Message</span>: <span style="color:#e6db74">&#34;Received: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">names</span>, <span style="color:#e6db74">&#34;, &#34;</span>),
+</span></span><span style="display:flex;"><span>            })
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">names</span> = append(<span style="color:#a6e22e">names</span>, <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Name</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 服务端流式实现</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">server</span>) <span style="color:#a6e22e">SayHelloServerStream</span>(<span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloRequets</span>, <span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Greeter_SayHelloServerStreamServer</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#ae81ff">5</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Send</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloResponse</span>{
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">Message</span>: <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Hello %s (#%d)&#34;</span>, <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Name</span>, <span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>),
+</span></span><span style="display:flex;"><span>        }); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 双向流式实现</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">server</span>) <span style="color:#a6e22e">SayHelloBothStream</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Greeter_SayHelloBothStreamServer</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Recv</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Send</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloResponse</span>{
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">Message</span>: <span style="color:#e6db74">&#34;Echo: &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Name</span>,
+</span></span><span style="display:flex;"><span>        }); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">lis</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Listen</span>(<span style="color:#e6db74">&#34;tcp&#34;</span>, <span style="color:#e6db74">&#34;:50051&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;监听失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">NewServer</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">RegisterGreeterServer</span>(<span style="color:#a6e22e">s</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">server</span>{})
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;服务端已启动 :50051&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">Serve</span>(<span style="color:#a6e22e">lis</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;服务启动失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="3-客户端实现">3. 客户端实现</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;io&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pb</span> <span style="color:#e6db74">&#34;your_project/pb/helloworld&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;google.golang.org/grpc/credentials/insecure&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">conn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Dial</span>(<span style="color:#e6db74">&#34;localhost:50051&#34;</span>, 
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithTransportCredentials</span>(<span style="color:#a6e22e">insecure</span>.<span style="color:#a6e22e">NewCredentials</span>()),
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithBlock</span>())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;连接失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">client</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">NewGreeterClient</span>(<span style="color:#a6e22e">conn</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 测试客户端流式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">runClientStream</span>(<span style="color:#a6e22e">client</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 测试服务端流式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">runServerStream</span>(<span style="color:#a6e22e">client</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 测试双向流式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">runBidiStream</span>(<span style="color:#a6e22e">client</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 客户端流</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">runClientStream</span>(<span style="color:#a6e22e">client</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">GreeterClient</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">stream</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">SayHelloClientStream</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;创建流失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">names</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;Alice&#34;</span>, <span style="color:#e6db74">&#34;Bob&#34;</span>, <span style="color:#e6db74">&#34;Charlie&#34;</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">name</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">names</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Send</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloRequets</span>{<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>}); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;发送失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">CloseAndRecv</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;接收失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;客户端流响应: %s&#34;</span>, <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">Message</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 服务端流</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">runServerStream</span>(<span style="color:#a6e22e">client</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">GreeterClient</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">stream</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">SayHelloServerStream</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), 
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloRequets</span>{<span style="color:#a6e22e">Name</span>: <span style="color:#e6db74">&#34;World&#34;</span>})
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;调用失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Recv</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;接收失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;服务端流消息: %s&#34;</span>, <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">Message</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 双向流</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">runBidiStream</span>(<span style="color:#a6e22e">client</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">GreeterClient</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">stream</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">SayHelloBothStream</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;创建流失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Recv</span>()
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">EOF</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;接收失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;双向流接收: %s&#34;</span>, <span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">Message</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">messages</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;Hello&#34;</span>, <span style="color:#e6db74">&#34;How are you?&#34;</span>, <span style="color:#e6db74">&#34;Goodbye&#34;</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">msg</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">messages</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Send</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloRequets</span>{<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">msg</span>}); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;发送失败: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">1</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">CloseSend</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4-核心实现要点">4. 核心实现要点</h4>
+<p><strong>流式处理模式</strong>：</p>
+<ul>
+<li><strong>客户端流式</strong>：使用<code>CloseAndRecv()</code>结束流并获取最终响应</li>
+<li><strong>服务端流式</strong>：通过循环<code>Recv()</code>接收持续响应</li>
+<li><strong>双向流式</strong>：需使用goroutine分离收发操作</li>
+</ul>
+<p><strong>错误处理</strong>：</p>
+<ul>
+<li>检查<code>io.EOF</code>判断流结束</li>
+<li>所有流操作都需要处理可能的网络错误</li>
+<li>使用<code>context.WithTimeout</code>添加超时控制</li>
+</ul>
+<p><strong>性能优化</strong>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithInitialWindowSize</span>(<span style="color:#ae81ff">32</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>)   <span style="color:#75715e">// 32KB流窗口</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithInitialConnWindowSize</span>(<span style="color:#ae81ff">64</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>) <span style="color:#75715e">// 64KB连接窗口</span>
+</span></span></code></pre></div><h4 id="5-注意事项">5. 注意事项</h4>
+<p><strong>流生命周期管理</strong>：</p>
+<ul>
+<li>客户端流和服务端流必须正确调用Close方法</li>
+<li>双向流需要显式调用CloseSend()</li>
+</ul>
+<p><strong>并发控制</strong>：</p>
+<ul>
+<li>双向流推荐使用<code>sync.WaitGroup</code>协调收发协程</li>
+<li>单流并发读写需要加锁保护</li>
+</ul>
+<p><strong>监控指标</strong>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;go.opencensus.io/plugin/ocgrpc&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">NewServer</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">StatsHandler</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ocgrpc</span>.<span style="color:#a6e22e">ServerHandler</span>{}),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>该实现方案已通过proto文件验证，支持三种流式通信模式。建议配合Wireshark或gRPC健康探针进行网络层监控，生产环境需添加TLS加密</p>
+<h3 id="protobuf数据类型">Protobuf数据类型</h3>
+<h4 id="1-类型参照表">1. 类型参照表</h4>
+<p><img src="index.assets/image-20250415145144401.png" alt="image-20250415145144401"></p>
+<h4 id="2-空参数">2. 空参数</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-protobuf" data-lang="protobuf"><span style="display:flex;"><span><span style="color:#66d9ef">import</span> <span style="color:#e6db74">&#34;google/protobuf/empty.proto&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">rpc</span> GetSystemTime (google.protobuf.Empty) <span style="color:#66d9ef">returns</span> (TimeResponse);<span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><h3 id="proto文件详解">proto文件详解</h3>
+<h4 id="1-message嵌套">1. message嵌套</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 第一种，行内嵌套</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">User</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">name</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">message</span> <span style="color:#a6e22e">Address</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">street</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">city</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Address</span> <span style="color:#a6e22e">home_address</span> = <span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Address</span> <span style="color:#a6e22e">work_address</span> = <span style="color:#ae81ff">4</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 第二种</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">Address</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">street</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">city</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">User</span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Address</span> <span style="color:#a6e22e">address</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2-enum枚举类型">2. enum枚举类型</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 第一种行内嵌套</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">Product</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">id</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">enum</span> <span style="color:#a6e22e">Category</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ELECTRONICS</span> = <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">CLOTHING</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">BOOKS</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Category</span> <span style="color:#a6e22e">category</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 第二种</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">enum</span> <span style="color:#a6e22e">Category</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ELECTRONICS</span> = <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">CLOTHING</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">BOOKS</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">Product</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">id</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Category</span> <span style="color:#a6e22e">category</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="3-map类型">3. map类型</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">ShoppingCart</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">map</span>&lt;<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">OrderItem</span>&gt; <span style="color:#a6e22e">items</span> = <span style="color:#ae81ff">1</span>;  <span style="color:#75715e">// Key为商品ID，Value为嵌套消息</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4-timestamp类型">4. timestamp类型</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">message</span> <span style="color:#a6e22e">LogEntry</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">string</span> <span style="color:#a6e22e">message</span> = <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">google</span>.<span style="color:#a6e22e">protobuf</span>.<span style="color:#a6e22e">Timestamp</span> <span style="color:#a6e22e">timestamp</span> = <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//## 时间对象 → Timestamp：</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;google.golang.org/protobuf/types/known/timestamppb&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">now</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">timestamp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">timestamppb</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">now</span>)  <span style="color:#75715e">// 生成 Timestamp 对象</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//## Timestamp → 时间对象</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">goTime</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">timestamp</span>.<span style="color:#a6e22e">AsTime</span>()       <span style="color:#75715e">// 转换为 time.Time</span>
+</span></span></code></pre></div><h3 id="grpc与grpc之间传递数据">GRPC与GRPC之间传递数据</h3>
+
+
+        
+      </section>
+
+      
+      <div class="divider w-full"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4 w-full">
+        
+        <a class="group btn btn-outline" href="/posts/cicd/harbor/" title="Harbor">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">Harbor</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/clientgo/base/" title="Client-go">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Client-go</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  
+  <div class="hidden lg:flex lg:flex-col lg:items-end lg:col-span-1">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#grpc概述">GRPC概述</a>
+      <ul>
+        <li><a href="#http请求示例">HTTP请求示例</a></li>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#安装protoc编译器">安装protoc编译器</a></li>
+        <li><a href="#grpc示例">GRPC示例</a></li>
+        <li><a href="#stream">stream</a></li>
+        <li><a href="#protobuf数据类型">Protobuf数据类型</a></li>
+        <li><a href="#proto文件详解">proto文件详解</a></li>
+        <li><a href="#grpc与grpc之间传递数据">GRPC与GRPC之间传递数据</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>没什么想介绍的，一个很大众的全栈码农&hellip;</p>
+<p>喜欢代码，车，马，真的是 🐎</p>
+<p>讨厌别人让我给自己的代码写文档
+最厌烦的是别人的程序没有留下文档</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">目标</div>
+
+        <div class="prose dark:prose-invert">
+          <p>学习 K8S 源码！加油！</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme =  null 
+</script>
+
+
+
+
+
+  
+  
+  <script src = "/js/imagesloaded.pkgd.min.js"></script>
+  <script src = "/js/masonry.pkgd.min.js"></script>
+
+  
+  
+    
+  
+  <script src="/js/grid.min.js"></script>
+
+
+
+
+  
+
+<script src="/js/main.min.js"></script>
+
+    
+
+
+
+
+
+
+
+
+<script src = "/js/luxon@1.26.0.js"></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+
+<script type="module">
+  import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+  mediumZoom('#dream-single-post-content img', {
+    background: 'oklch(var(--b1))',
+    margin: 24,
+  })
+</script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

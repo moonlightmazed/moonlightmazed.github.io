@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.146.3">
+<meta name="generator" content="Hugo 0.146.4">
 
 
 <meta property="og:url" content="https://moonlightmazed.github.io/posts/cicd/harbor/">
@@ -405,24 +405,22 @@
         
 
         <h2 id="更换国内源">更换国内源</h2>
-<p class="mathjax"># 阿里
-sed -e 's|^#mirrorlist=|mirrorlist=|g' \
-    -e 's|^baseurl=https://mirrors.aliyun.com/rockylinux|#baseurl=http://dl.rockylinux.org/$contentdir|g' \
-    -i.bak \
-    /etc/yum.repos.d/rocky*.repo
-
-# 中科大
-sed -e 's|^mirrorlist=|#mirrorlist=|g' \
-    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g' \
-    -i.bak \
-    /etc/yum.repos.d/rocky-extras.repo \
-    /etc/yum.repos.d/rocky.repo
-
-
-# 生成缓存
-dnf makecache</p>
-
-<h2 id="docker-安装">Docker 安装</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 阿里</span>
+</span></span><span style="display:flex;"><span>sed -e <span style="color:#e6db74">&#39;s|^#mirrorlist=|mirrorlist=|g&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -e <span style="color:#e6db74">&#39;s|^baseurl=https://mirrors.aliyun.com/rockylinux|#baseurl=http://dl.rockylinux.org/$contentdir|g&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -i.bak <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    /etc/yum.repos.d/rocky*.repo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 中科大</span>
+</span></span><span style="display:flex;"><span>sed -e <span style="color:#e6db74">&#39;s|^mirrorlist=|#mirrorlist=|g&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -e <span style="color:#e6db74">&#39;s|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    -i.bak <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    /etc/yum.repos.d/rocky-extras.repo <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    /etc/yum.repos.d/rocky.repo
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 生成缓存</span>
+</span></span><span style="display:flex;"><span>dnf makecache
+</span></span></code></pre></div><h2 id="docker-安装">Docker 安装</h2>
 <h3 id="更新系统与安装依赖">更新系统与安装依赖</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo dnf update -y
 </span></span><span style="display:flex;"><span>sudo dnf install -y yum-utils device-mapper-persistent-data lvm2
@@ -548,10 +546,10 @@ dnf makecache</p>
         
 
         
-        <a class="group btn btn-outline" href="/posts/clientgo/base/" title="Client-go">
+        <a class="group btn btn-outline" href="/posts/grpc/grpc/" title="GRPC">
           <div class="inline-flex flex-col items-end">
             <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
-            <span class="max-w-48 truncate">Client-go</span>
+            <span class="max-w-48 truncate">GRPC</span>
           </div>
           <ion-icon name="chevron-forward"></ion-icon>
         </a>
@@ -762,20 +760,6 @@ dnf makecache</p>
 
 
     
-
-    
-      <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
-<script>
-  MathJax = {
-    tex: {
-      displayMath: [
-        ['\\[', '\\]'],
-        ['$$', '$$'],
-      ], 
-      inlineMath: [['\\(', '\\)']], 
-    },
-  }
-</script>
 
     
 

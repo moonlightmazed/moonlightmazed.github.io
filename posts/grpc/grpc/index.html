@@ -26,7 +26,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.146.4">
+<meta name="generator" content="Hugo 0.146.5">
 
 
 <meta property="og:url" content="https://moonlightmazed.github.io/posts/grpc/grpc/">
@@ -347,7 +347,7 @@
   <meta itemprop="description" content="gRPC 是一个高性能、开源、通用的RPC框架，由Google推出，基于HTTP2协议标准设计开发，默认采用Protocol Buffers数据序列化协议，支持多种开发语言。gRPC提供了一种简单的方法来精确的定义服务，并且为客户端和服务端自动生成可靠的功能库。">
   <meta itemprop="datePublished" content="2023-08-15T14:22:11+08:00">
   <meta itemprop="dateModified" content="2023-08-15T14:22:11+08:00">
-  <meta itemprop="wordCount" content="2503">
+  <meta itemprop="wordCount" content="4235">
   <meta itemprop="image" content="https://moonlightmazed.github.io/posts/grpc/grpc/image.png">
   <meta itemprop="keywords" content="GRPC">
 
@@ -358,7 +358,7 @@
           <span data-format="luxon">2023-08-15T14:22:11&#43;08:00</span>
           
 
-          | <span>5分钟阅读</span>
+          | <span>9分钟阅读</span>
 
           
           | <span>更新于
@@ -904,7 +904,195 @@
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#75715e">//## Timestamp → 时间对象</span>
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">goTime</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">timestamp</span>.<span style="color:#a6e22e">AsTime</span>()       <span style="color:#75715e">// 转换为 time.Time</span>
-</span></span></code></pre></div><h3 id="grpc与grpc之间传递数据">GRPC与GRPC之间传递数据</h3>
+</span></span></code></pre></div><h3 id="metadata">Metadata</h3>
+<h4 id="1-metadata-基础">1. Metadata 基础</h4>
+<h5 id="a--数据结构">a . <strong>数据结构</strong></h5>
+<p>Metadata 的类型为 <code>map[string][]string</code>，即键值对结构，其中键为字符串，值为字符串切片（允许多个值）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">MD</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>][]<span style="color:#66d9ef">string</span>
+</span></span></code></pre></div><h5 id="b-键的规范化">b. <strong>键的规范化</strong></h5>
+<p>所有键会被自动转换为小写，例如 <code>Key1</code> 和 <code>kEy1</code> 会被视为同一个键</p>
+<h5 id="c-二进制数据支持">c. <strong>二进制数据支持</strong></h5>
+<p>若键以 <code>-bin</code> 结尾（如 <code>key-bin</code>），其值可以是二进制数据。系统会自动对这类值进行 Base64 编码传输，接收端解码还原</p>
+<h4 id="2-创建-metadata">2. 创建 Metadata</h4>
+<h5 id="a-metadatanew">a. <strong>metadata.New</strong></h5>
+<p>通过 <code>map[string]string</code> 创建，每个键对应单个值（但值类型仍为切片）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">md</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">New</span>(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;k1&#34;</span>: <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#e6db74">&#34;k2&#34;</span>: <span style="color:#e6db74">&#34;v2&#34;</span>})
+</span></span></code></pre></div><h5 id="b-metadatapairs">b. <strong>metadata.Pairs</strong></h5>
+<p>通过键值对参数创建，允许重复键，值会被合并到同一键的切片中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">md</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">Pairs</span>(<span style="color:#e6db74">&#34;k1&#34;</span>, <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#e6db74">&#34;k1&#34;</span>, <span style="color:#e6db74">&#34;v2&#34;</span>, <span style="color:#e6db74">&#34;k2&#34;</span>, <span style="color:#e6db74">&#34;v3&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 结果：k1 → [&#34;v1&#34;, &#34;v2&#34;], k2 → [&#34;v3&#34;]</span>
+</span></span></code></pre></div><h4 id="3-客户端发送-metadata">3. 客户端发送 Metadata</h4>
+<h5 id="a-附加到上下文">a. <strong>附加到上下文</strong></h5>
+<p>推荐使用 <code>metadata.AppendToOutgoingContext</code>，避免覆盖已有元数据：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">AppendToOutgoingContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;k1&#34;</span>, <span style="color:#e6db74">&#34;v1&#34;</span>, <span style="color:#e6db74">&#34;k2&#34;</span>, <span style="color:#e6db74">&#34;v2&#34;</span>)
+</span></span></code></pre></div><h5 id="b-新建上下文">b. <strong>新建上下文</strong></h5>
+<p>使用 <code>metadata.NewOutgoingContext</code> 创建新上下文，但会覆盖已有元数据，需谨慎使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">md</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">Pairs</span>(<span style="color:#e6db74">&#34;k1&#34;</span>, <span style="color:#e6db74">&#34;v1&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">NewOutgoingContext</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">md</span>)
+</span></span></code></pre></div><h4 id="4-服务端接收-metadata">4. 服务端接收 Metadata</h4>
+<h5 id="a-从上下文提取">a. <strong>从上下文提取</strong></h5>
+<p>通过 <code>metadata.FromIncomingContext</code> 获取客户端发送的元数据：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">RPC</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">md</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">FromIncomingContext</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="b-流式-rpc-中获取">b. <strong>流式 RPC 中获取</strong></h5>
+<p>对于流式调用，需从流对象的上下文中提取</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Server</span>) <span style="color:#a6e22e">StreamRPC</span>(<span style="color:#a6e22e">stream</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">Service_StreamRPCServer</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">md</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">FromIncomingContext</span>(<span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Context</span>())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="5-服务端发送-metadata">5. 服务端发送 Metadata</h4>
+<h5 id="a-发送-header">a. <strong>发送 Header</strong></h5>
+<p>在响应中附加 Header（适用于 Unary 或流式调用）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Unary 模式</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">header</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">Pairs</span>(<span style="color:#e6db74">&#34;trace-id&#34;</span>, <span style="color:#e6db74">&#34;123&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">SendHeader</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">header</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 流模式</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">SendHeader</span>(<span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">Pairs</span>(<span style="color:#e6db74">&#34;trace-id&#34;</span>, <span style="color:#e6db74">&#34;123&#34;</span>))
+</span></span></code></pre></div><h5 id="b-发送-trailer">b. <strong>发送 Trailer</strong></h5>
+<p>Trailer 在响应结束时发送（常用于流式调用）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Unary 模式</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">trailer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">Pairs</span>(<span style="color:#e6db74">&#34;status&#34;</span>, <span style="color:#e6db74">&#34;success&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">SetTrailer</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">trailer</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 流模式</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">SetTrailer</span>(<span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">Pairs</span>(<span style="color:#e6db74">&#34;status&#34;</span>, <span style="color:#e6db74">&#34;success&#34;</span>))
+</span></span></code></pre></div><h4 id="6-客户端接收服务端-metadata">6. 客户端接收服务端 Metadata</h4>
+<h5 id="a-unary-调用">a. <strong>Unary 调用</strong></h5>
+<p>通过 <code>grpc.Header</code> 和 <code>grpc.Trailer</code> 选项捕获：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">header</span>, <span style="color:#a6e22e">trailer</span> <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">MD</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">UnaryRPC</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Header</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">header</span>), <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Trailer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">trailer</span>))
+</span></span></code></pre></div><h5 id="b-流式调用">b. <strong>流式调用</strong></h5>
+<p>通过流对象直接获取：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">stream</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">StreamRPC</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">header</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Header</span>()   <span style="color:#75715e">// 接收 Header</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">trailer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stream</span>.<span style="color:#a6e22e">Trailer</span>()    <span style="color:#75715e">// 接收 Trailer</span>
+</span></span></code></pre></div><h4 id="7-应用场景">7. 应用场景</h4>
+<ul>
+<li><strong>链路追踪</strong>：传递 TraceID、SpanID 等</li>
+<li><strong>认证鉴权</strong>：携带 Token 或签名信息。</li>
+<li><strong>调试信息</strong>：附加请求来源、版本号等元信息。</li>
+</ul>
+<h4 id="8-注意事项">8. 注意事项</h4>
+<ul>
+<li>
+<p><strong>性能敏感场景</strong>：避免传输大体积元数据，影响 HTTP/2 帧效率。</p>
+</li>
+<li>
+<p><strong>键名冲突</strong>：因大小写不敏感，需统一命名规范。</p>
+</li>
+<li>
+<p><strong>二进制数据</strong>：使用 <code>-bin</code> 后缀键时，确保编解码逻辑正确。</p>
+</li>
+</ul>
+<h3 id="拦截器">拦截器</h3>
+<h4 id="1-拦截器的核心概念">1. 拦截器的核心概念</h4>
+<p>拦截器（Interceptor）是 gRPC 中用于在请求/响应生命周期中插入自定义逻辑的机制，类似于 Web 框架中的中间件。它允许开发者在不修改业务代码的前提下，实现统一的功能扩展，例如日志记录、认证鉴权、性能监控等</p>
+<h4 id="2-拦截器的类型与用途">2. 拦截器的类型与用途</h4>
+<h5 id="a-按作用对象分类">a. <strong>按作用对象分类</strong></h5>
+<ul>
+<li>
+<p><strong>服务端拦截器</strong></p>
+<p>处理服务端接收的请求和返回的响应，常见用途:</p>
+<ul>
+<li><strong>认证鉴权</strong>：验证客户端 Token 或证书（如从 metadata 提取 <code>appid</code> 和 <code>appkey</code>）</li>
+<li><strong>日志记录</strong>：记录请求方法、耗时、错误信息等（如 <code>info.FullMethod</code> 和 <code>time.Since(start)</code>）</li>
+<li><strong>限流熔断</strong>：控制请求并发量或响应速率</li>
+</ul>
+</li>
+<li>
+<p><strong>客户端拦截器</strong></p>
+<p>处理客户端发起的请求和服务端返回的响应，常见用途：</p>
+<ul>
+<li><strong>请求重试</strong>：在超时或网络错误时自动重试</li>
+<li><strong>请求签名</strong>：对请求参数加密或添加签名头</li>
+<li><strong>响应缓存</strong>：缓存高频请求结果以提升性能</li>
+</ul>
+</li>
+</ul>
+<h5 id="b--按通信模式分类">b.  <strong>按通信模式分类</strong></h5>
+<ul>
+<li><strong>Unary 拦截器</strong>：处理单次请求-响应模式（如普通 RPC 调用）</li>
+<li><strong>Stream 拦截器</strong>：处理流式通信（如服务器端流、客户端流、双向流）</li>
+</ul>
+<h4 id="3-拦截器的实现方式">3. 拦截器的实现方式</h4>
+<h5 id="a-服务端拦截器实现">a. <strong>服务端拦截器实现</strong></h5>
+<ul>
+<li>
+<p><strong>Unary 拦截器</strong></p>
+<p>需实现 <code>grpc.UnaryServerInterceptor</code> 接口，函数签名：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">info</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryServerInfo</span>, <span style="color:#a6e22e">handler</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryHandler</span>) (<span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>)
+</span></span></code></pre></div><p><strong>关键参数</strong>：</p>
+<ul>
+<li><code>info.FullMethod</code>：RPC 方法名（如 <code>/ecommerce.OrderService/GetOrder</code>）</li>
+<li><code>handler</code>：实际业务逻辑的封装，调用后会触发 RPC 处理</li>
+</ul>
+<p><strong>示例</strong>（日志记录）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">LoggingInterceptor</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">info</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryServerInfo</span>, <span style="color:#a6e22e">handler</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryHandler</span>) (<span style="color:#66d9ef">interface</span>{}, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">start</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">handler</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">req</span>) <span style="color:#75715e">// 调用业务逻辑</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method: %s, Latency: %v, Error: %v&#34;</span>, <span style="color:#a6e22e">info</span>.<span style="color:#a6e22e">FullMethod</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Since</span>(<span style="color:#a6e22e">start</span>), <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Stream 拦截器</strong></p>
+<p>需实现 <code>grpc.StreamServerInterceptor</code> 接口，通过 <code>ServerStream</code> 对象处理流式数据</p>
+</li>
+</ul>
+<h5 id="b-客户端拦截器实现">b. <strong>客户端拦截器实现</strong></h5>
+<ul>
+<li>
+<p><strong>Unary 拦截器</strong></p>
+<p>需实现 <code>grpc.UnaryClientInterceptor</code> 接口，函数签名:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">method</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">reply</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">cc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">ClientConn</span>, <span style="color:#a6e22e">invoker</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryInvoker</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">CallOption</span>) <span style="color:#66d9ef">error</span>
+</span></span></code></pre></div><p><strong>示例</strong>（添加请求头）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">AuthInterceptor</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">method</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">reply</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">cc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">ClientConn</span>, <span style="color:#a6e22e">invoker</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryInvoker</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">CallOption</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">metadata</span>.<span style="color:#a6e22e">AppendToOutgoingContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;token&#34;</span>, <span style="color:#e6db74">&#34;user-token-123&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">invoker</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">method</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">reply</span>, <span style="color:#a6e22e">cc</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ul>
+<h5 id="c-拦截器注册">c. <strong>拦截器注册</strong></h5>
+<ul>
+<li>
+<p><strong>服务端注册</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">NewServer</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryInterceptor</span>(<span style="color:#a6e22e">LoggingInterceptor</span>),       <span style="color:#75715e">// 单拦截器</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">ChainUnaryInterceptor</span>(<span style="color:#a6e22e">interceptor1</span>, <span style="color:#a6e22e">interceptor2</span>), <span style="color:#75715e">// 链式拦截器</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div></li>
+<li>
+<p><strong>客户端注册</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">conn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Dial</span>(<span style="color:#a6e22e">address</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithUnaryInterceptor</span>(<span style="color:#a6e22e">ClientLoggingInterceptor</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithStreamInterceptor</span>(<span style="color:#a6e22e">ClientStreamInterceptor</span>),
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div></li>
+</ul>
+<h4 id="4-拦截器的执行顺序">4. 拦截器的执行顺序</h4>
+<h5 id="a-服务端拦截器">a. <strong>服务端拦截器</strong></h5>
+<ul>
+<li>前置处理按注册顺序执行（如 <code>interceptor1 → interceptor2</code>）</li>
+<li>后置处理按逆序执行（如 <code>interceptor2 → interceptor1</code>）</li>
+</ul>
+<h5 id="b-客户端拦截器">b. <strong>客户端拦截器</strong></h5>
+<p>执行顺序与服务端类似，但需注意链式调用的上下文传递</p>
+<h4 id="5-典型应用场景">5. 典型应用场景</h4>
+<h5 id="a-链路追踪">a. <strong>链路追踪</strong></h5>
+<p>在 metadata 中注入 TraceID，通过拦截器统一记录跨服务调用链</p>
+<h5 id="b-统一认证">b. <strong>统一认证</strong></h5>
+<p>从请求头提取 Token，验证通过后放行，否则返回 <code>codes.Unauthenticated</code> 错误</p>
+<h5 id="c-性能监控">c. <strong>性能监控</strong></h5>
+<p>统计请求耗时、成功率等指标，集成 Prometheus 等监控工具</p>
+<h4 id="6-注意事项">6. 注意事项</h4>
+<h5 id="a-性能影响">a. <strong>性能影响</strong></h5>
+<p>避免在拦截器中执行耗时操作（如数据库查询），否则可能成为性能瓶颈</p>
+<h5 id="b-错误处理">b. <strong>错误处理</strong></h5>
+<p>使用 <code>status.Error(codes code, string msg)</code> 返回标准错误，而非自定义错误码</p>
+<h5 id="c-二进制数据">c. <strong>二进制数据</strong></h5>
+<p>若传输二进制数据，需使用 <code>-bin</code> 后缀键并手动编解码（如 Base64)</p>
+<p>​</p>
 
 
         
@@ -953,7 +1141,8 @@
         <li><a href="#stream">stream</a></li>
         <li><a href="#protobuf数据类型">Protobuf数据类型</a></li>
         <li><a href="#proto文件详解">proto文件详解</a></li>
-        <li><a href="#grpc与grpc之间传递数据">GRPC与GRPC之间传递数据</a></li>
+        <li><a href="#metadata">Metadata</a></li>
+        <li><a href="#拦截器">拦截器</a></li>
       </ul>
     </li>
   </ul>

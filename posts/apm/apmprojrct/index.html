@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APM | MoonLightMaze’s Blog</title>
+
+    
+  
+    <link href="/img/favicon.ico" rel="icon" type="image/x-icon" />
+  
+
+
+<link rel="canonical" href="https://moonlightmazed.github.io/posts/apm/apmprojrct/" />
+
+
+
+<meta name="author" content="MoonLightMaze" />
+<meta name="description" content="APM(Application Performance Management) 即应用性能管理系统，是对企业系统即时监控以实现对应用程序性能管理和故障管理的系统化的解决方案，应用性能管理，主要指对企业的关键业务应用进行监测、优化，提高企业应用的可靠性和质量，保证用户得到良好的服务，降低总拥有成本。" />
+
+
+<meta name="keywords" content="APM">
+
+
+
+<meta name="generator" content="Hugo 0.146.7">
+
+
+<meta property="og:url" content="https://moonlightmazed.github.io/posts/apm/apmprojrct/">
+  <meta property="og:site_name" content="MoonLightMaze’s Blog">
+  <meta property="og:title" content="APM">
+  <meta property="og:description" content="APM(Application Performance Management) 即应用性能管理系统，是对企业系统即时监控以实现对应用程序性能管理和故障管理的系统化的解决方案，应用性能管理，主要指对企业的关键业务应用进行监测、优化，提高企业应用的可靠性和质量，保证用户得到良好的服务，降低总拥有成本。">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-06-03T14:11:02+08:00">
+    <meta property="article:modified_time" content="2023-06-03T14:11:02+08:00">
+    <meta property="article:tag" content="APM">
+    <meta property="og:image" content="https://moonlightmazed.github.io/posts/apm/apmprojrct/image.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://moonlightmazed.github.io/posts/apm/apmprojrct/image.png">
+  <meta name="twitter:title" content="APM">
+  <meta name="twitter:description" content="APM(Application Performance Management) 即应用性能管理系统，是对企业系统即时监控以实现对应用程序性能管理和故障管理的系统化的解决方案，应用性能管理，主要指对企业的关键业务应用进行监测、优化，提高企业应用的可靠性和质量，保证用户得到良好的服务，降低总拥有成本。">
+
+
+
+
+  
+
+<link rel="stylesheet" href="/css/output.min.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+
+    
+    <script defer src = "/js/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/avatar.webp" alt="MoonLightMaze’s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="https://moonlightmazed.github.io/" class="text-lg font-semibold cursor-pointer">
+          MoonLightMaze’s Blog
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">代码写的越急，程序跑得越慢</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/" target="" title="home">
+    
+    <ion-icon name="home"></ion-icon>
+    
+    home
+  </a>
+</li>
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
+</li>
+
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    
+    <ion-icon name="logo-github"></ion-icon>
+    
+    GitHub
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/" target="" title="home">
+    <ion-icon class="group-hover:text-primary-content" name="home"></ion-icon>
+  </a>
+  
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    <ion-icon class="group-hover:text-primary-content" name="logo-github"></ion-icon>
+  </a>
+  
+
+
+
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+
+<div class="lg:grid lg:grid-cols-5 gap-4 mt-4 px-4">
+  
+  <div class="lg:col-span-4">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert w-full" id="dream-single-post-main" itemscope
+      itemtype="http://schema.org/Article" style="margin-right: 30px;max-width: 100% !important;width: 100% !important; ">
+      
+  <meta itemprop="name" content="APM">
+  <meta itemprop="description" content="APM(Application Performance Management) 即应用性能管理系统，是对企业系统即时监控以实现对应用程序性能管理和故障管理的系统化的解决方案，应用性能管理，主要指对企业的关键业务应用进行监测、优化，提高企业应用的可靠性和质量，保证用户得到良好的服务，降低总拥有成本。">
+  <meta itemprop="datePublished" content="2023-06-03T14:11:02+08:00">
+  <meta itemprop="dateModified" content="2023-06-03T14:11:02+08:00">
+  <meta itemprop="wordCount" content="3936">
+  <meta itemprop="image" content="https://moonlightmazed.github.io/posts/apm/apmprojrct/image.png">
+  <meta itemprop="keywords" content="APM">
+
+      <header>
+        <h1 itemprop="headline">APM</h1>
+        <p class="text-sm">
+          
+          <span data-format="luxon">2023-06-03T14:11:02&#43;08:00</span>
+          
+
+          | <span>8分钟阅读</span>
+
+          
+          | <span>更新于
+            
+            <span data-format="luxon">2023-06-03T14:11:02&#43;08:00</span>
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">MoonLightMaze</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      
+      <section id="dream-single-post-content" itemprop="articleBody" class="w-full" style="margin-top: 40px !important;">
+        
+
+        <h2 id="基础代码框架">基础代码框架</h2>
+<h3 id="安装mysql和redis">安装mysql和redis</h3>
+<p>本地使用docker-compose安装mysql和redis</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-docker" data-lang="docker"><span style="display:flex;"><span>version:<span style="color:#e6db74">&#34;3&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>services:<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>	mysql:<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		restart: always<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		image: mysql:latest<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		container_name: mysql<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		environment:<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>			- <span style="color:#e6db74">&#34;MYSQL_ROOT_PASSWORD&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		ports:<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>			- <span style="color:#e6db74">&#34;3306:3306&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>	<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>	redis:<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		restart: always<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		image: redis<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		container_name: redis<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>		ports:<span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010"></span>			- <span style="color:#e6db74">&#34;6379:6379&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><h3 id="创建数据库">创建数据库</h3>
+<p><strong>ordersvc</strong> :订单表</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> <span style="color:#a6e22e">t_order</span>
+</span></span><span style="display:flex;"><span>(
+</span></span><span style="display:flex;"><span>	id <span style="color:#66d9ef">bigint</span> <span style="color:#66d9ef">auto_increment</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span>,
+</span></span><span style="display:flex;"><span>	order_id <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	ctime <span style="color:#66d9ef">timestamp</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	utime <span style="color:#66d9ef">timestamp</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	sku_id <span style="color:#66d9ef">bigint</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	num <span style="color:#66d9ef">int</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	price <span style="color:#66d9ef">int</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	uid <span style="color:#66d9ef">bigint</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">constraint</span> order_pk2
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">unique</span> (order_id)
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><p><strong>skusvc</strong>： 商品表</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> <span style="color:#a6e22e">t_sku</span>
+</span></span><span style="display:flex;"><span>(
+</span></span><span style="display:flex;"><span>	id <span style="color:#66d9ef">bigint</span> <span style="color:#66d9ef">auto_increment</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span>,
+</span></span><span style="display:flex;"><span>	name <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	price <span style="color:#66d9ef">int</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	ctime <span style="color:#66d9ef">timestamp</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	utime <span style="color:#66d9ef">timestamp</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	num <span style="color:#66d9ef">int</span> <span style="color:#66d9ef">null</span>
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span> 
+</span></span></code></pre></div><p><strong>usersvc</strong>: 用户表</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> <span style="color:#a6e22e">t_user</span>
+</span></span><span style="display:flex;"><span>(
+</span></span><span style="display:flex;"><span>	id <span style="color:#66d9ef">bigint</span> <span style="color:#66d9ef">auto_increment</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span>,
+</span></span><span style="display:flex;"><span>	name <span style="color:#66d9ef">varchar</span>(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	ctime <span style="color:#66d9ef">timestamp</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+</span></span><span style="display:flex;"><span>	utime <span style="color:#66d9ef">timestamp</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">CURRENT_TIMESTAMP</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><h3 id="mysqlredis初始化">mysql、redis初始化</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;database/sql&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span> <span style="color:#e6db74">&#34;github.com/go-sql-driver/mysql&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/redis/go-redis/v9&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 程序的框架初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">frame</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">DB</span>      <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">RedisDB</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Client</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Frame</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">frame</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">option</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">frame</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">FrameMysqlDBOption</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">option</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">frame</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">DB</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">Open</span>(<span style="color:#e6db74">&#34;mysql&#34;</span>, <span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">DB</span>.<span style="color:#a6e22e">Ping</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">FrameRedisDBOption</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">pwd</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">option</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">frame</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">client</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">NewClient</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Options</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Addr</span>:     <span style="color:#a6e22e">addr</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">DB</span>:       <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Password</span>: <span style="color:#a6e22e">pwd</span>,
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Ping</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()).<span style="color:#a6e22e">Result</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">result</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;PONG&#34;</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#e6db74">&#34;redis client init fail&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">f</span>.<span style="color:#a6e22e">RedisDB</span> = <span style="color:#a6e22e">client</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">f</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">frame</span>) <span style="color:#a6e22e">Init</span>(<span style="color:#a6e22e">options</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">option</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">opt</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">options</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">opt</span>(<span style="color:#a6e22e">f</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="启动所有服务">启动所有服务</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os/signal&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;syscall&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">start</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Start</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">close</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">globalStart</span> = make([]<span style="color:#a6e22e">start</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">globalClose</span> = make([]<span style="color:#a6e22e">close</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">EndPotin</span> = <span style="color:#a6e22e">endPoint</span>{<span style="color:#a6e22e">stop</span>: make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">1</span>)}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">endPoint</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">stop</span> <span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">endPoint</span>) <span style="color:#a6e22e">Start</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">starter</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">globalStart</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">starter</span>.<span style="color:#a6e22e">Start</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">quit</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Signal</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">signal</span>.<span style="color:#a6e22e">Notify</span>(<span style="color:#a6e22e">quit</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">SIGQUIT</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">SIGTERM</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">SIGINT</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">quit</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">Shutdown</span>()
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stop</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">endPoint</span>) <span style="color:#a6e22e">Shutdown</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">closer</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">globalClose</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">closer</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">stop</span> <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="初始化http">初始化HTTP</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">封装Http请求
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">mux 注册路由
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">Server启动服务
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">HttpServer</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mux</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ServeMux</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewHttpServer</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">HttpServer</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mux</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>{<span style="color:#a6e22e">Addr</span>: <span style="color:#a6e22e">addr</span>, <span style="color:#a6e22e">Handler</span>: <span style="color:#a6e22e">mux</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">httpServer</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">HttpServer</span>{<span style="color:#a6e22e">mux</span>: <span style="color:#a6e22e">mux</span>, <span style="color:#a6e22e">Server</span>: <span style="color:#a6e22e">server</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">globalStart</span> = append(<span style="color:#a6e22e">globalStart</span>, <span style="color:#a6e22e">httpServer</span>)  <span style="color:#75715e">// 注册启动服务</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">globalClose</span> = append(<span style="color:#a6e22e">globalClose</span>, <span style="color:#a6e22e">httpServer</span>)	<span style="color:#75715e">// 注册关闭服务</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">httpServer</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">将一个函数作为handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">HttpServer</span>) <span style="color:#a6e22e">HandleFunc</span>(<span style="color:#a6e22e">pattern</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">handler</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>)) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#a6e22e">pattern</span>, <span style="color:#a6e22e">handler</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">将一个struct必须实现ServeHTTP(w http.Response,r *http.Request)方法
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">作为handler
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">HttpServer</span>) <span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">pattern</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">handler</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">pattern</span>, <span style="color:#a6e22e">handler</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 启动服务</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">HttpServer</span>) <span style="color:#a6e22e">Start</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Server</span>.<span style="color:#a6e22e">ListenAndServe</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 关闭服务</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">HttpServer</span>) <span style="color:#a6e22e">Close</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">Server</span>.<span style="color:#a6e22e">Shutdown</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">TODO</span>())
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="初始化grpc">初始化GRPC</h3>
+<h4 id="1-client">1. Client</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc/credentials/insecure&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GrpcClient</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">ClientConn</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewGrpcClient</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">GrpcClient</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">dial</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Dial</span>(<span style="color:#a6e22e">addr</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithUnaryInterceptor</span>(<span style="color:#a6e22e">unaryInterceptor</span>()),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithTransportCredentials</span>(<span style="color:#a6e22e">insecure</span>.<span style="color:#a6e22e">NewCredentials</span>()),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">GrpcClient</span>{<span style="color:#a6e22e">ClientConn</span>: <span style="color:#a6e22e">dial</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">unaryInterceptor</span>() <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryClientInterceptor</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">method</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">reply</span> <span style="color:#66d9ef">any</span>, <span style="color:#a6e22e">cc</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">ClientConn</span>, <span style="color:#a6e22e">invoker</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryInvoker</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">CallOption</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">invoker</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">method</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">reply</span>, <span style="color:#a6e22e">cc</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="2-server">2. Server</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">grpcServer</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">Server</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewGrpcServer</span>(<span style="color:#a6e22e">addr</span> <span style="color:#66d9ef">string</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">grpcServer</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">svc</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">NewServer</span>(<span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryInterceptor</span>(<span style="color:#a6e22e">unaryServerInterceptor</span>()))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">grpcServer</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Server</span>: <span style="color:#a6e22e">svc</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">addr</span>:   <span style="color:#a6e22e">addr</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">globalStart</span> = append(<span style="color:#a6e22e">globalStart</span>, <span style="color:#a6e22e">server</span>)   <span style="color:#75715e">// 注册启动服务</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">globalClose</span> = append(<span style="color:#a6e22e">globalClose</span>, <span style="color:#a6e22e">server</span>)   <span style="color:#75715e">// 注册关闭服务</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">server</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 拦截器</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">unaryServerInterceptor</span>() <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryServerInterceptor</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">any</span>, <span style="color:#a6e22e">info</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryServerInfo</span>, <span style="color:#a6e22e">handler</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">UnaryHandler</span>) (<span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">any</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 关闭服务</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">g</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpcServer</span>) <span style="color:#a6e22e">Close</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Server</span>.<span style="color:#a6e22e">GracefulStop</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 开启服务</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">g</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">grpcServer</span>) <span style="color:#a6e22e">Start</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">listen</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Listen</span>(<span style="color:#e6db74">&#34;tcp&#34;</span>, <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">addr</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Serve</span>(<span style="color:#a6e22e">listen</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="http状态码">HTTP状态码</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;encoding/json&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">jsonType</span> <span style="color:#66d9ef">string</span> = <span style="color:#e6db74">&#34;application/json&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Status</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Code</span>    <span style="color:#66d9ef">int</span>    <span style="color:#e6db74">`json:&#34;code&#34;`</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Message</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;message&#34;`</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Body</span>    <span style="color:#66d9ef">any</span>    <span style="color:#e6db74">`json:&#34;body&#34;`</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">httpStatus</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">HttpStatus</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">httpStatus</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">httpStatus</span>) <span style="color:#a6e22e">Success</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">status</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Status</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Code</span>:    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Message</span>: <span style="color:#e6db74">&#34;Success&#34;</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">marshal</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">status</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#a6e22e">jsonType</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">marshal</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">httpStatus</span>) <span style="color:#a6e22e">SuccessBody</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">body</span> <span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">status</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Status</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Code</span>:    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Message</span>: <span style="color:#a6e22e">msg</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Body</span>:    <span style="color:#a6e22e">body</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">marshal</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">status</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#a6e22e">jsonType</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">marshal</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">httpStatus</span>) <span style="color:#a6e22e">Fail</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">body</span> <span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">status</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Status</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Code</span>:    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Message</span>: <span style="color:#a6e22e">msg</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Body</span>:    <span style="color:#a6e22e">body</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">marshal</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">status</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#a6e22e">jsonType</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">marshal</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">httpStatus</span>) <span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">body</span> <span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">status</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Status</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Code</span>:    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Message</span>: <span style="color:#a6e22e">msg</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Body</span>:    <span style="color:#a6e22e">body</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">marshal</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">status</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>().<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#a6e22e">jsonType</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">WriteHeader</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">marshal</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="日志">日志</h3>
+
+
+
+  <blockquote>
+    <p>使用slog，生成带色彩的日志</p>
+  </blockquote>
+
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;encoding/json&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;log/slog&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;runtime&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 颜色代码</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">colorRed</span>    = <span style="color:#e6db74">&#34;\033[31m&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">colorBlue</span>   = <span style="color:#e6db74">&#34;\033[34m&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">colorGreen</span>  = <span style="color:#e6db74">&#34;\033[32m&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">colorYellow</span> = <span style="color:#e6db74">&#34;\033[33m&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">colorReset</span>  = <span style="color:#e6db74">&#34;\033[0m&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Logger 定义日志接口</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Logger</span> <span style="color:#66d9ef">interface</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ColorfulJSONHandler 自定义支持彩色输出的 JSON 处理器</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ColorfulJSONHandler</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Handler</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// NewColorfulJSONHandler 创建一个新的 ColorfulJSONHandler 实例</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewColorfulJSONHandler</span>() <span style="color:#f92672">*</span><span style="color:#a6e22e">ColorfulJSONHandler</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ColorfulJSONHandler</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Handler</span>: <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">NewJSONHandler</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#66d9ef">nil</span>),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 处理日志记录</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ColorfulJSONHandler</span>) <span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">r</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Record</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">color</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Level</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelDebug</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">color</span> = <span style="color:#a6e22e">colorBlue</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelInfo</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">color</span> = <span style="color:#a6e22e">colorGreen</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelWarn</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">color</span> = <span style="color:#a6e22e">colorYellow</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">LevelError</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">color</span> = <span style="color:#a6e22e">colorRed</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">color</span> = <span style="color:#a6e22e">colorReset</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">buf</span> []<span style="color:#66d9ef">byte</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Attrs</span>(<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span>) <span style="color:#66d9ef">bool</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">Kind</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">KindGroup</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">gv</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">Group</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ga</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">gv</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">appendAttr</span>(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">ga</span>)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">buf</span> = <span style="color:#a6e22e">appendAttr</span>(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">a</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">record</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">any</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;time&#34;</span>:    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Time</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;level&#34;</span>:   <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Level</span>.<span style="color:#a6e22e">String</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;message&#34;</span>: <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Message</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Unmarshal</span>(<span style="color:#a6e22e">buf</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">record</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">jsonData</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">record</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprint</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#a6e22e">color</span>, string(<span style="color:#a6e22e">jsonData</span>), <span style="color:#a6e22e">colorReset</span>, <span style="color:#e6db74">&#34;\n&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 追加属性到缓冲区</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">appendAttr</span>(<span style="color:#a6e22e">buf</span> []<span style="color:#66d9ef">byte</span>, <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Attr</span>) []<span style="color:#66d9ef">byte</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">buf</span>) &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#e6db74">&#39;,&#39;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">keyBytes</span> <span style="color:#f92672">:=</span> []byte(<span style="color:#a6e22e">jsonEscape</span>(<span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Key</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#e6db74">&#39;&#34;&#39;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">keyBytes</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#e6db74">&#39;&#34;&#39;</span>, <span style="color:#e6db74">&#39;:&#39;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">Kind</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">KindString</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">valBytes</span> <span style="color:#f92672">:=</span> []byte(<span style="color:#a6e22e">jsonEscape</span>(<span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">String</span>()))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#e6db74">&#39;&#34;&#39;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">valBytes</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#e6db74">&#39;&#34;&#39;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">valBytes</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">Value</span>.<span style="color:#a6e22e">Any</span>())
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">buf</span> = append(<span style="color:#a6e22e">buf</span>, <span style="color:#a6e22e">valBytes</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">buf</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 转义 JSON 字符串</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">jsonEscape</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ReplaceAll</span>(<span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ReplaceAll</span>(<span style="color:#a6e22e">s</span>, <span style="color:#e6db74">`\`</span>, <span style="color:#e6db74">`\\`</span>), <span style="color:#e6db74">`&#34;`</span>, <span style="color:#e6db74">`\&#34;`</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 获取调用者信息</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getCallerInfo</span>() (<span style="color:#a6e22e">file</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">line</span> <span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">line</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">runtime</span>.<span style="color:#a6e22e">Caller</span>(<span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// SlogColorfulJSONLogger 实现 Logger 接口</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">SlogColorfulJSONLogger</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">logger</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">Logger</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// NewSlogColorfulJSONLogger 创建一个新的 SlogColorfulJSONLogger 实例</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewJSONLogger</span>() <span style="color:#f92672">*</span><span style="color:#a6e22e">SlogColorfulJSONLogger</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewColorfulJSONHandler</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">logger</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">slog</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">handler</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">SlogColorfulJSONLogger</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">logger</span>: <span style="color:#a6e22e">logger</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Debug 记录调试级别的日志</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SlogColorfulJSONLogger</span>) <span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">line</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getCallerInfo</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">args</span> = append([]<span style="color:#66d9ef">any</span>{<span style="color:#e6db74">&#34;action&#34;</span>, <span style="color:#a6e22e">action</span>, <span style="color:#e6db74">&#34;file&#34;</span>, <span style="color:#a6e22e">file</span>, <span style="color:#e6db74">&#34;line&#34;</span>, <span style="color:#a6e22e">line</span>}, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Debug</span>(<span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Info 记录信息级别的日志</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SlogColorfulJSONLogger</span>) <span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">line</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getCallerInfo</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">args</span> = append([]<span style="color:#66d9ef">any</span>{<span style="color:#e6db74">&#34;action&#34;</span>, <span style="color:#a6e22e">action</span>, <span style="color:#e6db74">&#34;file&#34;</span>, <span style="color:#a6e22e">file</span>, <span style="color:#e6db74">&#34;line&#34;</span>, <span style="color:#a6e22e">line</span>}, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Warn 记录警告级别的日志</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SlogColorfulJSONLogger</span>) <span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">line</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getCallerInfo</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">args</span> = append([]<span style="color:#66d9ef">any</span>{<span style="color:#e6db74">&#34;action&#34;</span>, <span style="color:#a6e22e">action</span>, <span style="color:#e6db74">&#34;file&#34;</span>, <span style="color:#a6e22e">file</span>, <span style="color:#e6db74">&#34;line&#34;</span>, <span style="color:#a6e22e">line</span>}, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Warn</span>(<span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Error 记录错误级别的日志</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">SlogColorfulJSONLogger</span>) <span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">action</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">msg</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">args</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">any</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">file</span>, <span style="color:#a6e22e">line</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getCallerInfo</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">args</span> = append([]<span style="color:#66d9ef">any</span>{<span style="color:#e6db74">&#34;action&#34;</span>, <span style="color:#a6e22e">action</span>, <span style="color:#e6db74">&#34;file&#34;</span>, <span style="color:#a6e22e">file</span>, <span style="color:#e6db74">&#34;line&#34;</span>, <span style="color:#a6e22e">line</span>, <span style="color:#e6db74">&#34;error&#34;</span>, <span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">Error</span>()}, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">l</span>.<span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">msg</span>, <span style="color:#a6e22e">args</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// NewCustomError 自定义错误类型</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewCustomError</span>(<span style="color:#a6e22e">message</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">customError</span>{<span style="color:#a6e22e">message</span>: <span style="color:#a6e22e">message</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// customError 自定义错误结构体</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">customError</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">message</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Error 实现 error 接口</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">customError</span>) <span style="color:#a6e22e">Error</span>() <span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">message</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="sql">sql</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;database/sql&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">dbUtil</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">DBUtil</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">dbUtil</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dbUtil</span>) <span style="color:#a6e22e">Query</span>(<span style="color:#a6e22e">rows</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">Rows</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">any</span>) []<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">any</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rows</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> []<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">any</span>{}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">rows</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">columns</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rows</span>.<span style="color:#a6e22e">Columns</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">scanArgs</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">any</span>, len(<span style="color:#a6e22e">columns</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">values</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">any</span>, len(<span style="color:#a6e22e">columns</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">values</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">scanArgs</span>[<span style="color:#a6e22e">j</span>] = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">values</span>[<span style="color:#a6e22e">j</span>]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">any</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rows</span>.<span style="color:#a6e22e">Next</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">record</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">any</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">rows</span>.<span style="color:#a6e22e">Scan</span>(<span style="color:#a6e22e">scanArgs</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">col</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">values</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">col</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">col</span>.(<span style="color:#66d9ef">type</span>) {
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">case</span> []<span style="color:#66d9ef">byte</span>:
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">record</span>[<span style="color:#a6e22e">columns</span>[<span style="color:#a6e22e">i</span>]] = string(<span style="color:#a6e22e">col</span>.([]<span style="color:#66d9ef">byte</span>))
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>					<span style="color:#a6e22e">record</span>[<span style="color:#a6e22e">columns</span>[<span style="color:#a6e22e">i</span>]] = <span style="color:#a6e22e">col</span>
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">res</span> = append(<span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">record</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">res</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dbUtil</span>) <span style="color:#a6e22e">QueryFirst</span>(<span style="color:#a6e22e">rows</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">Rows</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">any</span>) <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">any</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">Query</span>(<span style="color:#a6e22e">rows</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">res</span>) &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">res</span>[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="测试框架">测试框架</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">dogapm</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">pb</span> <span style="color:#e6db74">&#34;proto/hello&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;testing&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// mysql db</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestFrame</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mysqlDB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">FrameMysqlDBOption</span>(<span style="color:#e6db74">&#34;root:1230123@tcp(127.0.0.1:3306)/ordersvc&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">redisDB</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">FrameRedisDBOption</span>(<span style="color:#e6db74">&#34;127.0.0.1:6379&#34;</span>, <span style="color:#e6db74">&#34;1230123&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Frame</span>.<span style="color:#a6e22e">Init</span>(<span style="color:#a6e22e">mysqlDB</span>, <span style="color:#a6e22e">redisDB</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// http</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestHttp</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewHttpServer</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/test&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#e6db74">&#34;ok&#34;</span>))
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">Start</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">3600</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// grpc</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestGrpc</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">server</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewGrpcServer</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">RegisterHelloServiceServer</span>(<span style="color:#a6e22e">server</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Hello</span>{})
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">Start</span>()
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">grpcClient</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewGrpcClient</span>(<span style="color:#e6db74">&#34;127.0.0.1:8080&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">receive</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">NewHelloServiceClient</span>(<span style="color:#a6e22e">grpcClient</span>).<span style="color:#a6e22e">Receive</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">TODO</span>(), <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloMsg</span>{<span style="color:#a6e22e">Msg</span>: <span style="color:#e6db74">&#34;hello world&#34;</span>})
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">receive</span>.<span style="color:#a6e22e">Msg</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Hello</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">UnimplementedHelloServiceServer</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Hello</span>) <span style="color:#a6e22e">Receive</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloMsg</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">pb</span>.<span style="color:#a6e22e">HelloMsg</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">req</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="opentelemetry">OpenTelemetry</h2>
+<h3 id="创建http程序">创建http程序</h3>
+<p>在同一目录下创建 <code>main.go</code> 文件，并添加以下代码。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/roll&#34;</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">writer</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">request</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">number</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">6</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprintln</span>(<span style="color:#a6e22e">writer</span>, <span style="color:#a6e22e">number</span>)
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#a6e22e">handler</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="添加-opentelemetry-测量仪器">添加 OpenTelemetry 测量仪器</h3>
+<p>接下来，我们将展示如何在示例应用程序中添加 OpenTelemetry 测量仪器。</p>
+<h4 id="1-引入依赖">1. 引入依赖</h4>
+<p>在你的Go项目中安装以下依赖包。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span> <span style="color:#e6db74">&#34;go.opentelemetry.io/otel&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/stdout/stdoutmetric&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/stdout/stdouttrace&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/propagation&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/metric&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/resource&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/trace&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/semconv/v1.24.0&#34;</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#34;go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp&#34;</span>
+</span></span></code></pre></div><p>这里安装的是 OpenTelemety SDK 组件和 <code>net/http</code> 测量仪器。如果要对不同的库进行网络请求检测，则需要安装相应的仪器库。</p>
+<h4 id="2-初始化opentelemetry-sdk">2. 初始化OpenTelemetry SDK</h4>
+<p>首先，我们将初始化OpenTelemetry SDK。任何想导出追踪数据的应用程序都必需完成这一步初始化。</p>
+<p>新建一个<code>otel.go</code>文件，并在其中添加以下代码。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;errors&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/stdout/stdoutmetric&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/stdout/stdouttrace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/propagation&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/metric&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/trace&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// setupOTelSDK 引导 OpenTelemetry pipeline。</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 如果没有返回错误，请确保调用 shutdown 进行适当清理。</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">setupOTelSDK</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) (<span style="color:#a6e22e">shutdown</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">shutdownFuncs</span> []<span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// shutdown 会调用通过 shutdownFuncs 注册的清理函数。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 调用产生的错误会被合并。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 每个注册的清理函数将被调用一次。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">shutdown</span> = <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">error</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">fn</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">shutdownFuncs</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">fn</span>(<span style="color:#a6e22e">ctx</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">shutdownFuncs</span> = <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// handleErr 调用 shutdown 进行清理，并确保返回所有错误信息。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handleErr</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">inErr</span> <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">inErr</span>, <span style="color:#a6e22e">shutdown</span>(<span style="color:#a6e22e">ctx</span>))
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置传播器</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">prop</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newPropagator</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">SetTextMapPropagator</span>(<span style="color:#a6e22e">prop</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置 trace provider.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracerProvider</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newTraceProvider</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">handleErr</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">shutdownFuncs</span> = append(<span style="color:#a6e22e">shutdownFuncs</span>, <span style="color:#a6e22e">tracerProvider</span>.<span style="color:#a6e22e">Shutdown</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">SetTracerProvider</span>(<span style="color:#a6e22e">tracerProvider</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置 meter provider.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">meterProvider</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newMeterProvider</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">handleErr</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">shutdownFuncs</span> = append(<span style="color:#a6e22e">shutdownFuncs</span>, <span style="color:#a6e22e">meterProvider</span>.<span style="color:#a6e22e">Shutdown</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">SetMeterProvider</span>(<span style="color:#a6e22e">meterProvider</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newPropagator</span>() <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">TextMapPropagator</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">NewCompositeTextMapPropagator</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">TraceContext</span>{},
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">Baggage</span>{},
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newTraceProvider</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">TracerProvider</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">traceExporter</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stdouttrace</span>.<span style="color:#a6e22e">New</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">stdouttrace</span>.<span style="color:#a6e22e">WithPrettyPrint</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">traceProvider</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">NewTracerProvider</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">WithBatcher</span>(<span style="color:#a6e22e">traceExporter</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 默认为 5s。为便于演示，设置为 1s。</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">WithBatchTimeout</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">traceProvider</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newMeterProvider</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">MeterProvider</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">metricExporter</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stdoutmetric</span>.<span style="color:#a6e22e">New</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">meterProvider</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">NewMeterProvider</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">WithReader</span>(<span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">NewPeriodicReader</span>(<span style="color:#a6e22e">metricExporter</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 默认为 1m。为便于演示，设置为 3s。</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">WithInterval</span>(<span style="color:#ae81ff">3</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>))),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">meterProvider</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>如果不使用 <code>tracing</code> ，则可以省略相应的 <code>TracerProvider</code> 的初始化代码；</p>
+<p>如果不使用 <code>metrics</code> ，则可以省略 <code>MeterProvider</code> 的初始化代码。</p>
+<h4 id="3-测量-http-server">3. 测量 HTTP server</h4>
+<p>现在，我们已经初始化了OpenTelemetry SDK，可以测量HTTP服务器了。</p>
+<p>按如下代码修改 <code>main.go</code>，加入设置 OpenTelemetry SDK 的代码，并使用 otelhttp 仪器库测量 HTTP 服务器：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;errors&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os/signal&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newHTTPHandler</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mux</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// handleFunc 是 mux.HandleFunc 的替代品，。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 它使用 http.route 模式丰富了 handler 的 HTTP 测量</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handleFunc</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">pattern</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">handlerFunc</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>)) {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 为 HTTP 测量配置 &#34;http.route&#34;。</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">otelhttp</span>.<span style="color:#a6e22e">WithRouteTag</span>(<span style="color:#a6e22e">pattern</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span>(<span style="color:#a6e22e">handlerFunc</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#a6e22e">pattern</span>, <span style="color:#a6e22e">handler</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Register handlers.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handleFunc</span>(<span style="color:#e6db74">&#34;/roll&#34;</span>, <span style="color:#a6e22e">roll</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 为整个服务器添加 HTTP 测量。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">otelhttp</span>.<span style="color:#a6e22e">NewHandler</span>(<span style="color:#a6e22e">mux</span>, <span style="color:#e6db74">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">handler</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">run</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalln</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">run</span>() (<span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 平滑处理 SIGINT (CTRL+C) .</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">stop</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">signal</span>.<span style="color:#a6e22e">NotifyContext</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Interrupt</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">stop</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置 OpenTelemetry.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">otelShutdown</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">setupOTelSDK</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 妥善处理停机，确保无泄漏</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">otelShutdown</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()))
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 启动 HTTP server.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">srv</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Addr</span>:         <span style="color:#e6db74">&#34;:8080&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">BaseContext</span>:  <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">net</span>.<span style="color:#a6e22e">Listener</span>) <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span> { <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ctx</span> },
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ReadTimeout</span>:  <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">WriteTimeout</span>: <span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Handler</span>:      <span style="color:#a6e22e">newHTTPHandler</span>(),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">srvErr</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">error</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">srvErr</span> <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">srv</span>.<span style="color:#a6e22e">ListenAndServe</span>()
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 等待中断.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">select</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">err</span> = <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">srvErr</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 启动 HTTP 服务器时出错.</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Done</span>():
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 等待第一个 CTRL+C.</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 尽快停止接收信号通知.</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">stop</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 调用 Shutdown 时，ListenAndServe 会立即返回 ErrServerClosed。</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">srv</span>.<span style="color:#a6e22e">Shutdown</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="4-添加自定义测量">4. 添加自定义测量</h4>
+<p>测量库可以捕捉系统边缘的遥测数据，例如入站和出站 HTTP 请求，但无法捕捉应用程序中的情况。因此需要编写一些自定义的手动仪器。</p>
+<p>修改 <code>roll.go</code>，使用 OpenTelemetry API 包含定制的测量仪器：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/attribute&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/metric&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracer</span>  = <span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">Tracer</span>(<span style="color:#e6db74">&#34;roll&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">meter</span>   = <span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">Meter</span>(<span style="color:#e6db74">&#34;roll&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rollCnt</span> <span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">Int64Counter</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rollCnt</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">meter</span>.<span style="color:#a6e22e">Int64Counter</span>(<span style="color:#e6db74">&#34;dice.rolls&#34;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">WithDescription</span>(<span style="color:#e6db74">&#34;The number of rolls by roll value&#34;</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">WithUnit</span>(<span style="color:#e6db74">&#34;{roll}&#34;</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">roll</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Context</span>(), <span style="color:#e6db74">&#34;roll&#34;</span>) <span style="color:#75715e">// 开始 span</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()                               <span style="color:#75715e">// 结束 span</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">number</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">rand</span>.<span style="color:#a6e22e">Intn</span>(<span style="color:#ae81ff">6</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rollValueAttr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">Int</span>(<span style="color:#e6db74">&#34;roll.value&#34;</span>, <span style="color:#a6e22e">number</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetAttributes</span>(<span style="color:#a6e22e">rollValueAttr</span>) <span style="color:#75715e">// span 添加属性</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 摇骰子次数的指标 +1</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">rollCnt</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">metric</span>.<span style="color:#a6e22e">WithAttributes</span>(<span style="color:#a6e22e">rollValueAttr</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Fprintln</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">number</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="5-运行应用程序">5. 运行应用程序</h4>
+<p>使用以下命令构建并运行应用程序：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">mod</span> <span style="color:#a6e22e">tidy</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">export</span> <span style="color:#a6e22e">OTEL_RESOURCE_ATTRIBUTES</span>=<span style="color:#e6db74">&#34;service.name=dice,service.version=0.1.0&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> .
+</span></span></code></pre></div><p>使用浏览器中打开 http://127.0.0.1:8080/roll。向服务器发送请求时，你会在控制台显示的链路跟踪中看到两个 span。由仪器库生成的 span 跟踪向 /roll 路由发出请求的生命周期。名为 roll 的 span 是手动创建的，它是前面提到的 span 的子 span。</p>
+<h3 id="将链路追踪数据发送至-jaeger">将链路追踪数据发送至 Jaeger</h3>
+<p>如果觉着控制台看的 span 不够直观，可以选择将链路追踪的数据发送至 Jaeger，通过 Jaeger UI 查看。</p>
+<h4 id="1-启动-jaeger">1. 启动 Jaeger</h4>
+<p>Jaeger 官方提供的 <strong>all-in-one</strong> 是为快速本地测试而设计的可执行文件。它包括 <strong>Jaeger UI</strong>、<strong>jaeger-collector</strong>、<strong>jaeger-query</strong> 和 <strong>jaeger-agent</strong>，以及一个内存存储组件。</p>
+<p>启动 <strong>all-in-one</strong> 的最简单方法是使用发布到 DockerHub 的预置镜像（只需一条命令行）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">docker</span> <span style="color:#a6e22e">run</span> <span style="color:#f92672">--</span><span style="color:#a6e22e">rm</span> <span style="color:#f92672">--</span><span style="color:#a6e22e">name</span> <span style="color:#a6e22e">jaeger</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">e</span> <span style="color:#a6e22e">COLLECTOR_ZIPKIN_HOST_PORT</span>=:<span style="color:#ae81ff">9411</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">6831</span>:<span style="color:#ae81ff">6831</span><span style="color:#f92672">/</span><span style="color:#a6e22e">udp</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">6832</span>:<span style="color:#ae81ff">6832</span><span style="color:#f92672">/</span><span style="color:#a6e22e">udp</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">5778</span>:<span style="color:#ae81ff">5778</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">16686</span>:<span style="color:#ae81ff">16686</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">4317</span>:<span style="color:#ae81ff">4317</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">4318</span>:<span style="color:#ae81ff">4318</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">14250</span>:<span style="color:#ae81ff">14250</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">14268</span>:<span style="color:#ae81ff">14268</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">14269</span>:<span style="color:#ae81ff">14269</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> <span style="color:#ae81ff">9411</span>:<span style="color:#ae81ff">9411</span> \
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">jaegertracing</span><span style="color:#f92672">/</span><span style="color:#a6e22e">all</span><span style="color:#f92672">-</span><span style="color:#a6e22e">in</span><span style="color:#f92672">-</span><span style="color:#a6e22e">one</span>:<span style="color:#ae81ff">1.55</span>
+</span></span></code></pre></div><p>然后你可以使用浏览器打开 <a href="http://localhost:16686/" target="_blank">http://localhost:16686</a>
+ 访问Jaeger UI。</p>
+<p>容器公开以下端口：</p>
+<p><img src="index.assets/image-20250423152858526.png" alt="image-20250423152858526"></p>
+<p>我们这里使用 HTTP 协议的<code>4318</code> 端口上报链路追踪数据。</p>
+<h4 id="2-上报至-jaeger">2. 上报至 Jaeger</h4>
+<p>安装 <code>otlptracehttp</code> 依赖包。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">get</span> <span style="color:#66d9ef">go</span>.<span style="color:#a6e22e">opentelemetry</span>.<span style="color:#a6e22e">io</span><span style="color:#f92672">/</span><span style="color:#a6e22e">otel</span><span style="color:#f92672">/</span><span style="color:#a6e22e">exporters</span><span style="color:#f92672">/</span><span style="color:#a6e22e">otlp</span><span style="color:#f92672">/</span><span style="color:#a6e22e">otlptrace</span><span style="color:#f92672">/</span><span style="color:#a6e22e">otlptracehttp</span>
+</span></span></code></pre></div><p>修改<code>otel.go</code> 代码，新增以下函数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newJaegerTraceProvider</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">TracerProvider</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 创建一个使用 HTTP 协议连接本机Jaeger的 Exporter</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">traceExporter</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">ctx</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">WithEndpoint</span>(<span style="color:#e6db74">&#34;127.0.0.1:4318&#34;</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">WithInsecure</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">traceProvider</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">NewTracerProvider</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">WithBatcher</span>(<span style="color:#a6e22e">traceExporter</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// 默认为 5s。为便于演示，设置为 1s。</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">WithBatchTimeout</span>(<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">traceProvider</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>并且按如下代码修改设置 trace provider 部分。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 设置 trace provider.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//tracerProvider, err := newTraceProvider()</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">tracerProvider</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newJaegerTraceProvider</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">handleErr</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">shutdownFuncs</span> = append(<span style="color:#a6e22e">shutdownFuncs</span>, <span style="color:#a6e22e">tracerProvider</span>.<span style="color:#a6e22e">Shutdown</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">SetTracerProvider</span>(<span style="color:#a6e22e">tracerProvider</span>)
+</span></span></code></pre></div><p>再次构建并启动程序。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">go</span> <span style="color:#a6e22e">run</span> .
+</span></span></code></pre></div><p>尝试访问一次 http://127.0.0.1:8080/roll ，确保修改后的服务能够正常运行。</p>
+<h4 id="3-使用-jaeger-ui">3. 使用 Jaeger UI</h4>
+<p>使用浏览器打开 <a href="http://127.0.0.1:16686/" target="_blank">http://127.0.0.1:16686</a>
+ 的Jaeger UI界面。 在屏幕左侧的 service 下拉框中选中 <code>dice</code>后查找，即可看到上报的 trace 数据。</p>
+<p><img src="https://www.liwenzhou.com/images/Go/otel/jaeger-search.png" alt="Jaeger search"></p>
+<p>点击右侧的 trace 数据，即可查看详情。</p>
+<p><img src="https://www.liwenzhou.com/images/Go/otel/jaeger-trace.png" alt="Jaeger trace"></p>
+<p>完整代码请查看 <a href="https://github.com/Q1mi/dice" target="_blank">https://github.com/Q1mi/dice</a>
+</p>
+
+
+        
+      </section>
+
+      
+      <div class="divider w-full"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4 w-full">
+        
+        <a class="group btn btn-outline" href="/posts/grpc/grpc/" title="GRPC">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">GRPC</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/clientgo/base/" title="Client-go">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Client-go</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  
+  <div class="hidden lg:flex lg:flex-col lg:items-end lg:col-span-1">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#基础代码框架">基础代码框架</a>
+      <ul>
+        <li><a href="#安装mysql和redis">安装mysql和redis</a></li>
+        <li><a href="#创建数据库">创建数据库</a></li>
+        <li><a href="#mysqlredis初始化">mysql、redis初始化</a></li>
+        <li><a href="#启动所有服务">启动所有服务</a></li>
+        <li><a href="#初始化http">初始化HTTP</a></li>
+        <li><a href="#初始化grpc">初始化GRPC</a></li>
+        <li><a href="#http状态码">HTTP状态码</a></li>
+        <li><a href="#日志">日志</a></li>
+        <li><a href="#sql">sql</a></li>
+        <li><a href="#测试框架">测试框架</a></li>
+      </ul>
+    </li>
+    <li><a href="#opentelemetry">OpenTelemetry</a>
+      <ul>
+        <li><a href="#创建http程序">创建http程序</a></li>
+        <li><a href="#添加-opentelemetry-测量仪器">添加 OpenTelemetry 测量仪器</a></li>
+        <li><a href="#将链路追踪数据发送至-jaeger">将链路追踪数据发送至 Jaeger</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>没什么想介绍的，一个很大众的全栈码农&hellip;</p>
+<p>喜欢代码，车，马，真的是 🐎</p>
+<p>讨厌别人让我给自己的代码写文档
+最厌烦的是别人的程序没有留下文档</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">目标</div>
+
+        <div class="prose dark:prose-invert">
+          <p>学习 K8S 源码！加油！</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme =  null 
+</script>
+
+
+
+
+
+  
+  
+  <script src = "/js/imagesloaded.pkgd.min.js"></script>
+  <script src = "/js/masonry.pkgd.min.js"></script>
+
+  
+  
+    
+  
+  <script src="/js/grid.min.js"></script>
+
+
+
+
+  
+
+<script src="/js/main.min.js"></script>
+
+    
+
+
+
+
+
+
+
+
+<script src = "/js/luxon@1.26.0.js"></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+
+<script type="module">
+  import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+  mediumZoom('#dream-single-post-content img', {
+    background: 'oklch(var(--b1))',
+    margin: 24,
+  })
+</script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

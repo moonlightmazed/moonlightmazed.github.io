@@ -15,5 +15,12 @@
       <guid>https://moonlightmazed.github.io/posts/golang/slog/</guid>
       <description>&lt;p&gt;slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。&lt;/p&gt;</description>
     </item>
+    <item>
+      <title>Golang模块</title>
+      <link>https://moonlightmazed.github.io/posts/golang/modules/</link>
+      <pubDate>Sat, 03 Jun 2023 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/golang/modules/</guid>
+      <description>&lt;h2 id=&#34;golang基础&#34;&gt;Golang基础&lt;/h2&gt;&#xA;&lt;h3 id=&#34;slice&#34;&gt;Slice&lt;/h3&gt;&#xA;&lt;h4 id=&#34;1-组成&#34;&gt;1. 组成&lt;/h4&gt;&#xA;&lt;p&gt;slice主要由三部分组成&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;index.assets/image-20250420125214667.png&#34; alt=&#34;image-20250420125214667&#34;&gt;&lt;/p&gt;&#xA;&lt;h4 id=&#34;2-声明&#34;&gt;2. 声明&lt;/h4&gt;&#xA;&lt;p&gt;1️⃣ 字面量：var ints [ ]int&lt;/p&gt;&#xA;&lt;p&gt;变量ints就要存在一段连续的内存中，实际上就是个数组，data就是这个底层数组的起始地址， 但是目前只分配了这个切片结构，还没有分配底层数组&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

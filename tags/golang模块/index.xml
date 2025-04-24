@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang模块 on MoonLightMaze’s Blog</title>
+    <link>https://moonlightmazed.github.io/tags/golang%E6%A8%A1%E5%9D%97/</link>
+    <description>Recent content in Golang模块 on MoonLightMaze’s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Sat, 03 Jun 2023 14:11:02 +0800</lastBuildDate>
+    <atom:link href="https://moonlightmazed.github.io/tags/golang%E6%A8%A1%E5%9D%97/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Golang模块</title>
+      <link>https://moonlightmazed.github.io/posts/golang/modules/</link>
+      <pubDate>Sat, 03 Jun 2023 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/golang/modules/</guid>
+      <description>&lt;h2 id=&#34;golang基础&#34;&gt;Golang基础&lt;/h2&gt;&#xA;&lt;h3 id=&#34;slice&#34;&gt;Slice&lt;/h3&gt;&#xA;&lt;h4 id=&#34;1-组成&#34;&gt;1. 组成&lt;/h4&gt;&#xA;&lt;p&gt;slice主要由三部分组成&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;index.assets/image-20250420125214667.png&#34; alt=&#34;image-20250420125214667&#34;&gt;&lt;/p&gt;&#xA;&lt;h4 id=&#34;2-声明&#34;&gt;2. 声明&lt;/h4&gt;&#xA;&lt;p&gt;1️⃣ 字面量：var ints [ ]int&lt;/p&gt;&#xA;&lt;p&gt;变量ints就要存在一段连续的内存中，实际上就是个数组，data就是这个底层数组的起始地址， 但是目前只分配了这个切片结构，还没有分配底层数组&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

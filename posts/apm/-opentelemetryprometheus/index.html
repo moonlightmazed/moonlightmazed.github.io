@@ -412,7 +412,7 @@
  的第二个项目</p>
 <h3 id="grafana">Grafana</h3>
 <p>Grafana 是一个开源的分析和可视化平台，它允许你查询、可视化和警报来自各种数据源的数据。它提供了一个用户友好的界面，用于创建和共享仪表板、图表和警报。Grafana 支持广泛的数据源，其中就包括 <code>Prometheus</code></p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3fho4y76w10htgzbu.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022002941.png" alt="image-20250425022002941"></p>
 <h2 id="基础概念">基础概念</h2>
 <p>这里为了简单入门，尽量简单的介绍一些抽象概念，结合着代码理解，如果不能理解也没关系，代码写着写着自然就明白了：</p>
 <p><strong>Meter Provider</strong>
@@ -509,9 +509,9 @@
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>在我们的代码中，我们定义一个名字为 <code>requests_hello_total</code> 的 <code>Int64Counter</code> 指标类型，<code>Int64Counter</code> 代表这是一个只增不减的 <code>int64</code> 数值，用作记录请求总数正好合适。运行我们的程序，如果不出错的话，访问 <a href="http://localhost:2233/index" target="_blank">http://localhost:2223/index</a>
  可以看到 <code>Hello, Otel!</code>。并且我们访问 http://localhost:2223/metrics 可以看到指标数据：</p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3fipxasscqxrnqdtz.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022039766.png" alt="image-20250425022039766"></p>
 <p>这里数据还没有进行可视化，我们先把流程走通，多访问几次 http://localhost:2223/index 可以看到 <code>requests_hello_total</code> 会增加：</p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3fisjois0ncziqhey.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022056607.png" alt="image-20250425022056607"></p>
 <h3 id="histogram">Histogram</h3>
 <p>接下来我们采集一下 <code>Histogram</code> 指标，统计在 <code>0.1, 0.2, 0.5, 1, 2, 5</code> 秒以内的 <code>http</code> 请求数，在 <code>main.go</code> 中加上相关代码，可以直接复制过去：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
@@ -623,15 +623,15 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">static_configs</span>:
 </span></span><span style="display:flex;"><span>      <span style="color:#f92672">-</span> <span style="color:#a6e22e">targets</span>: [<span style="color:#e6db74">&#34;localhost:2223&#34;</span>]
 </span></span></code></pre></div><p><code>Prometheus</code> 会自动去 <code>{{target}}/metrics</code> 中拉取我们的指标。之后在浏览器打开 <code>Promethues</code> 的地址，例如我的是：http://localhost:9090，如果全部正常的话可以在 <code>status:targets</code> 中看见我们的指标：</p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3g9czdtby82iua1aq.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022121700.png" alt="image-20250425022121700"></p>
 <p>在 <code>Promethues</code> 的首页查询 <code>requests_hello_total</code> 指标可以看到可视化的图表：</p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3g97bbmuugx50in9k.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022142429.png" alt="image-20250425022142429"></p>
 <h2 id="安装-grafana">安装 Grafana</h2>
 <p>我的 <code>Grafana</code> 安装好了，登录进去后是这样的（我更改过默认颜色）：</p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3g98wqoz4p1a7odxw.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022158729.png" alt="image-20250425022158729"></p>
 <p>在 <code>Data source</code> 中添加 <code>Prometheus</code> 服务器，然后在 <code>Dashboard</code> 中添加我们想要监控的指标，即可看到更美观的图表：</p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3g9b57f26dhus44f4.png" alt="Go 监控告警入门 Opentelemetry"></p>
-<p><img src="https://api.oldme.net/static/rich/202408/d3g9b66l1puktjcltu.png" alt="Go 监控告警入门 Opentelemetry"></p>
+<p><img src="index.assets/image-20250425022219007.png" alt="image-20250425022219007"></p>
+<p><img src="index.assets/image-20250425022234942.png" alt="image-20250425022234942"></p>
 
 
         

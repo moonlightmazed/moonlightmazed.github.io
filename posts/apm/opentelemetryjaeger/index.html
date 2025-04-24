@@ -19,7 +19,7 @@
 
 
 <meta name="author" content="MoonLightMaze" />
-<meta name="description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。" />
+<meta name="description" content="Jaeger是 Uber 开源的分布式追踪系统，是支持 OpenTelemetry 的系统之一，也是 CNCF 项目。" />
 
 
 <meta name="keywords" content="OpenTelemetry">
@@ -32,7 +32,7 @@
 <meta property="og:url" content="https://moonlightmazed.github.io/posts/apm/opentelemetryjaeger/">
   <meta property="og:site_name" content="MoonLightMaze’s Blog">
   <meta property="og:title" content="Go 链路追踪入门 Opentelemetry">
-  <meta property="og:description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。">
+  <meta property="og:description" content="Jaeger是 Uber 开源的分布式追踪系统，是支持 OpenTelemetry 的系统之一，也是 CNCF 项目。">
   <meta property="og:locale" content="zh_Hans">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
@@ -47,7 +47,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://moonlightmazed.github.io/posts/apm/opentelemetryjaeger/image.png">
   <meta name="twitter:title" content="Go 链路追踪入门 Opentelemetry">
-  <meta name="twitter:description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。">
+  <meta name="twitter:description" content="Jaeger是 Uber 开源的分布式追踪系统，是支持 OpenTelemetry 的系统之一，也是 CNCF 项目。">
 
 
 
@@ -344,7 +344,7 @@
       itemtype="http://schema.org/Article" style="margin-right: 30px;max-width: 100% !important;width: 100% !important; ">
       
   <meta itemprop="name" content="Go 链路追踪入门 Opentelemetry">
-  <meta itemprop="description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。">
+  <meta itemprop="description" content="Jaeger是 Uber 开源的分布式追踪系统，是支持 OpenTelemetry 的系统之一，也是 CNCF 项目。">
   <meta itemprop="datePublished" content="2024-06-03T14:11:02+08:00">
   <meta itemprop="dateModified" content="2024-06-03T14:11:02+08:00">
   <meta itemprop="wordCount" content="978">
@@ -419,7 +419,7 @@
 <p>Jaeger 还有很多可用的端口，本篇只介绍和 otel 相关的，具体可以查看 <a href="https://www.jaegertracing.io/docs/1.56/getting-started/" target="_blank">Jaeger</a>
  官方文档哦。</p>
 <p>安装后，在浏览器中输入 IP:16686：</p>
-<p><img src="https://img2024.cnblogs.com/blog/2628160/202408/2628160-20240828112303779-1397366648.png" alt="img"></p>
+<p><img src="index.assets/image-20250425021724488.png" alt="image-20250425021724488"></p>
 <p>看到 gopher 侦探在追踪足迹的可爱图片就代表 Jaeger 安装成功咯。</p>
 <h2 id="编写-go-代码">编写 Go 代码</h2>
 <p>安装依赖：</p>
@@ -537,8 +537,8 @@
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h2 id="效果">效果</h2>
 <p>执行后，在面板中即可看到我们上传的数据。</p>
-<p><img src="https://img2024.cnblogs.com/blog/2628160/202408/2628160-20240828112323639-1038515574.png" alt="img"></p>
-<p><img src="https://img2024.cnblogs.com/blog/2628160/202408/2628160-20240828112333199-636024470.png" alt="img"></p>
+<p><img src="index.assets/image-20250425021831696.png" alt="image-20250425021831696"></p>
+<p><img src="index.assets/image-20250425021919134.png" alt="image-20250425021919134"></p>
 <p>可以看到我们的两个 span 已经上传到 <code>Jaeger</code> 中了，就是如此的简单！文中的代码开源在 <a href="https://github.com/oldme-git/teach-study/blob/master/golang/otel/trace/trace_test.go" target="_blank">Github</a>
 。</p>
 

@@ -23,6 +23,15 @@
     <loc>https://moonlightmazed.github.io/tags/</loc>
     <lastmod>2024-08-11T14:21:02+08:00</lastmod>
   </url><url>
+    <loc>https://moonlightmazed.github.io/posts/apm/opentelemetry/</loc>
+    <lastmod>2024-06-03T14:11:02+08:00</lastmod>
+  </url><url>
+    <loc>https://moonlightmazed.github.io/tags/opentelemetry/</loc>
+    <lastmod>2024-06-03T14:11:02+08:00</lastmod>
+  </url><url>
+    <loc>https://moonlightmazed.github.io/categories/%E7%9B%91%E6%8E%A7/</loc>
+    <lastmod>2024-06-03T14:11:02+08:00</lastmod>
+  </url><url>
     <loc>https://moonlightmazed.github.io/tags/ci/</loc>
     <lastmod>2024-03-14T03:03:52+08:00</lastmod>
   </url><url>
@@ -72,9 +81,6 @@
     <lastmod>2023-06-03T14:11:02+08:00</lastmod>
   </url><url>
     <loc>https://moonlightmazed.github.io/categories/kubernetes/</loc>
-    <lastmod>2023-06-03T14:11:02+08:00</lastmod>
-  </url><url>
-    <loc>https://moonlightmazed.github.io/categories/%E7%9B%91%E6%8E%A7/</loc>
     <lastmod>2023-06-03T14:11:02+08:00</lastmod>
   </url><url>
     <loc>https://moonlightmazed.github.io/posts/web/react/</loc>

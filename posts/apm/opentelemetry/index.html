@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golang 接入 OpenTelemetry 完整过程和思路 | MoonLightMaze’s Blog</title>
+
+    
+  
+    <link href="/img/favicon.ico" rel="icon" type="image/x-icon" />
+  
+
+
+<link rel="canonical" href="https://moonlightmazed.github.io/posts/apm/opentelemetry/" />
+
+
+
+<meta name="author" content="MoonLightMaze" />
+<meta name="description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。" />
+
+
+<meta name="keywords" content="OpenTelemetry">
+
+
+
+<meta name="generator" content="Hugo 0.146.7">
+
+
+<meta property="og:url" content="https://moonlightmazed.github.io/posts/apm/opentelemetry/">
+  <meta property="og:site_name" content="MoonLightMaze’s Blog">
+  <meta property="og:title" content="Golang 接入 OpenTelemetry 完整过程和思路">
+  <meta property="og:description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-06-03T14:11:02+08:00">
+    <meta property="article:modified_time" content="2024-06-03T14:11:02+08:00">
+    <meta property="article:tag" content="OpenTelemetry">
+    <meta property="og:image" content="https://moonlightmazed.github.io/posts/apm/opentelemetry/image.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://moonlightmazed.github.io/posts/apm/opentelemetry/image.png">
+  <meta name="twitter:title" content="Golang 接入 OpenTelemetry 完整过程和思路">
+  <meta name="twitter:description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。">
+
+
+
+
+  
+
+<link rel="stylesheet" href="/css/output.min.css" />
+
+
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+
+    
+    <script defer src = "/js/cdn.min.js"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between px-4">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/avatar.webp" alt="MoonLightMaze’s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="https://moonlightmazed.github.io/" class="text-lg font-semibold cursor-pointer">
+          MoonLightMaze’s Blog
+        </a>
+        
+        
+        <div class="text-base-content/60 text-sm">代码写的越急，程序跑得越慢</div>
+        
+      </div>
+      
+    </section>
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-[1] shadow-md">
+        
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/" target="" title="home">
+    
+    <ion-icon name="home"></ion-icon>
+    
+    home
+  </a>
+</li>
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="group inline-flex items-center p-2 cursor-pointer" href="/search" title="搜索">
+    <ion-icon name="search"></ion-icon>
+    搜索
+  </a>
+</li>
+
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    
+    <ion-icon name="logo-github"></ion-icon>
+    
+    GitHub
+  </a>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+      
+        
+      
+
+      
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/" target="" title="home">
+    <ion-icon class="group-hover:text-primary-content" name="home"></ion-icon>
+  </a>
+  
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/search" title="搜索">
+  <ion-icon class="group-hover:text-primary-content" name="search"></ion-icon>
+</a>
+
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+  
+  <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="https://github.com/moonlightmazed" target="_blank" title="GitHub">
+    <ion-icon class="group-hover:text-primary-content" name="logo-github"></ion-icon>
+  </a>
+  
+
+
+
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+
+<div class="lg:grid lg:grid-cols-5 gap-4 mt-4 px-4">
+  
+  <div class="lg:col-span-4">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert w-full" id="dream-single-post-main" itemscope
+      itemtype="http://schema.org/Article" style="margin-right: 30px;max-width: 100% !important;width: 100% !important; ">
+      
+  <meta itemprop="name" content="Golang 接入 OpenTelemetry 完整过程和思路">
+  <meta itemprop="description" content="OpenTelemetry，简称 OTel，是一个供应商中立的开源可观测性框架，用于仪表化、生成、收集和导出诸如跟踪、度量、日志等遥测数据。作为行业标准，它得到了40多个可观测性供应商的支持，在许多库、服务和应用中得到集成，并得到了众多最终用户的采用。">
+  <meta itemprop="datePublished" content="2024-06-03T14:11:02+08:00">
+  <meta itemprop="dateModified" content="2024-06-03T14:11:02+08:00">
+  <meta itemprop="wordCount" content="3123">
+  <meta itemprop="image" content="https://moonlightmazed.github.io/posts/apm/opentelemetry/image.png">
+  <meta itemprop="keywords" content="OpenTelemetry">
+
+      <header>
+        <h1 itemprop="headline">Golang 接入 OpenTelemetry 完整过程和思路</h1>
+        <p class="text-sm">
+          
+          <span data-format="luxon">2024-06-03T14:11:02&#43;08:00</span>
+          
+
+          | <span>7分钟阅读</span>
+
+          
+          | <span>更新于
+            
+            <span data-format="luxon">2024-06-03T14:11:02&#43;08:00</span>
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+          <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">MoonLightMaze</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      
+      <section id="dream-single-post-content" itemprop="articleBody" class="w-full" style="margin-top: 40px !important;">
+        
+
+        <h2 id="使用-otel-collect-contrib-初始化-traceprovider">使用 Otel-Collect-Contrib 初始化 trace.Provider</h2>
+<p>这里使用 <code>app -&gt; collector-contrib</code> 进行转发， 应用不直接对后端的存储。 <strong>适配性</strong> 更高。</p>
+<p><img src="index.assets/image-20250425012631102.png" alt="image-20250425012631102"></p>
+<p><code>collector-contrib</code> 最常见的两种协议 <code>grpc / http(s)</code>。 传入 endpoint 地址进行初始化 Provider， 参考代码 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/middlewares/otel/provider.go#41" target="_blank">grpcExporter 和 httpExporter</a>
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// Copyright The OpenTelemetry Authors</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// you may not use this file except in compliance with the License.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// You may obtain a copy of the License at</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//     http://www.apache.org/licenses/LICENSE-2.0</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Unless required by applicable law or agreed to in writing, software</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// See the License for the specific language governing permissions and</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// limitations under the License.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Example using OTLP exporters + collector + third-party backens. For</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// information about using the exporter, see:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// https://pkg.go.dev/go.opentelemetry.io/otel/exporters/otlp?tab=doc#example-package-Insecure</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">otel</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/url&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;google.golang.org/grpc/credentials/insecure&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/otlp/otlptrace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/resource&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">sdktrace</span> <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/sdk/trace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">semconv</span> <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/semconv/v1.12.0&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/trace&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Initializes an OTLP exporter, and configures the corresponding trace and</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// metric providers.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">initProvider</span>(<span style="color:#a6e22e">appname</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) (<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">TracerProvider</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">res</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">resource</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">ctx</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">resource</span>.<span style="color:#a6e22e">WithAttributes</span>(
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">// the service name used to display traces in backends</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">semconv</span>.<span style="color:#a6e22e">ServiceNameKey</span>.<span style="color:#a6e22e">String</span>(<span style="color:#a6e22e">appname</span>),
+</span></span><span style="display:flex;"><span>		),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to create resource: %w&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// If the OpenTelemetry Collector is running on a local cluster (minikube or</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// microk8s), it should be accessible through the NodePort service at the</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// `localhost:30080` endpoint. Otherwise, replace `localhost` with the</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// endpoint of your cluster. If you run the app inside k8s, then you can</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// probably connect directly to the service through dns.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithTimeout</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">cancel</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">endpoint</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">endpoint</span> = <span style="color:#e6db74">&#34;127.0.0.1:55680&#34;</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// var err error</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">exporter</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">traceExporter</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">endpoint</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to create trace exporter: %w&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Register the trace exporter with a TracerProvider, using a batch</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// span processor to aggregate spans before export.</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">bsp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sdktrace</span>.<span style="color:#a6e22e">NewBatchSpanProcessor</span>(<span style="color:#a6e22e">exporter</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracerProvider</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sdktrace</span>.<span style="color:#a6e22e">NewTracerProvider</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">sdktrace</span>.<span style="color:#a6e22e">WithSampler</span>(<span style="color:#a6e22e">sdktrace</span>.<span style="color:#a6e22e">AlwaysSample</span>()),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">sdktrace</span>.<span style="color:#a6e22e">WithResource</span>(<span style="color:#a6e22e">res</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">sdktrace</span>.<span style="color:#a6e22e">WithSpanProcessor</span>(<span style="color:#a6e22e">bsp</span>),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">tracerProvider</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">traceExporter</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">otlptrace</span>.<span style="color:#a6e22e">Exporter</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ur</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">Parse</span>(<span style="color:#a6e22e">endpoint</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">exporter</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">otlptrace</span>.<span style="color:#a6e22e">Exporter</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">ToLower</span>(<span style="color:#a6e22e">ur</span>.<span style="color:#a6e22e">Scheme</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;http&#34;</span>, <span style="color:#e6db74">&#34;https&#34;</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">exporter</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">httpExporter</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">ur</span>.<span style="color:#a6e22e">Host</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;grpc&#34;</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">fallthrough</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">exporter</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">grpcExpoter</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">ur</span>.<span style="color:#a6e22e">Host</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">exporter</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 创建 OTEL 的 GRPC 连接器</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">grpcExpoter</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">otlptrace</span>.<span style="color:#a6e22e">Exporter</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// addr := strings.TrimLeft(endpoint, &#34;grpc://&#34;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">conn</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">DialContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">endpoint</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Note the use of insecure transport here. TLS is recommended in production.</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithTransportCredentials</span>(<span style="color:#a6e22e">insecure</span>.<span style="color:#a6e22e">NewCredentials</span>()),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">grpc</span>.<span style="color:#a6e22e">WithBlock</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// grpc.WithTimeout(5*time.Second),</span>
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to create gRPC connection to collector: %w&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Set up a trace exporter</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">traceExporter</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">otlptracegrpc</span>.<span style="color:#a6e22e">New</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">otlptracegrpc</span>.<span style="color:#a6e22e">WithGRPCConn</span>(<span style="color:#a6e22e">conn</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// otlptracegrpc.WithHeaders(</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 	map[string]string{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 		&#34;authorization&#34;: BearerAuthToken,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 		&#34;Authorization&#34;: BearerAuthToken,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 	},</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// ),</span>
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to create trace exporter: %w&#34;</span>, <span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">traceExporter</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">httpExporter</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">otlptrace</span>.<span style="color:#a6e22e">Exporter</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// endpoint = strings.TrimPrefix(endpoint, &#34;https://&#34;)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// endpoint = strings.TrimPrefix(endpoint, &#34;http://&#34;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opts</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">Option</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">WithTimeout</span>(<span style="color:#ae81ff">5</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">WithEndpoint</span>(<span style="color:#a6e22e">endpoint</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">WithInsecure</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// otlptracehttp.WithHeaders(</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 	map[string]string{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 		&#34;authorization&#34;: BearerAuthToken,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 		&#34;Authorization&#34;: BearerAuthToken,</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 	},</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// ),</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">trace</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">otlptracehttp</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">trace</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="使用-otelgin-接入-traceprovider">使用 Otelgin 接入 TraceProvider</h2>
+<ol>
+<li>
+<p>第一步初始化好的 trace.Provider 需要通过 Option 的方式传入, 参考代码 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/middlewares/otel/register.go#L8" target="_blank">otel middleware option</a>
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">otel</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Register</span>(<span style="color:#a6e22e">appname</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opts</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Option</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ProviderOption</span>(<span style="color:#a6e22e">appname</span>, <span style="color:#a6e22e">endpoint</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">PropagationExtractOption</span>(),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Middleware</span>(<span style="color:#a6e22e">appname</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ProviderOption</span>(<span style="color:#a6e22e">appname</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Option</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 注册 Provider</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">provider</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">initProvider</span>(<span style="color:#a6e22e">appname</span>, <span style="color:#a6e22e">endpoint</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">WithTracerProvider</span>(<span style="color:#a6e22e">provider</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p>在 gin 已经实现了一个官方的 Middleware 支持 OpenTelemetry. 参考代码 <a href="https://github.com/open-telemetry/opentelemetry-go-contrib/blob/849072ef827b4abab754253e1e63e7b410a31084/instrumentation/github.com/gin-gonic/gin/otelgin/gintrace.go#L42" target="_blank">gin-gonic/gin/otelgin</a>
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">otelgin</span> <span style="color:#75715e">// import &#34;go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/codes&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/attribute&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/propagation&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">semconv</span> <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/semconv/v1.17.0&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/semconv/v1.17.0/httpconv&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">oteltrace</span> <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/trace&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracerKey</span>  = <span style="color:#e6db74">&#34;otel-go-contrib-tracer&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracerName</span> = <span style="color:#e6db74">&#34;go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Middleware returns middleware that will trace incoming requests.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The service parameter should describe the name of the (virtual)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// server handling the request.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Middleware</span>(<span style="color:#a6e22e">service</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">Option</span>) <span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cfg</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">opt</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">opts</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">opt</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">cfg</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">TracerProvider</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">TracerProvider</span> = <span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">GetTracerProvider</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">TracerProvider</span>.<span style="color:#a6e22e">Tracer</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">tracerName</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">WithInstrumentationVersion</span>(<span style="color:#a6e22e">Version</span>()),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">Propagators</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">Propagators</span> = <span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">GetTextMapPropagator</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">f</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">Filters</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">f</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// Serve the request to the next middleware</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#75715e">// if a filter rejects the request.</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Next</span>()
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">tracerKey</span>, <span style="color:#a6e22e">tracer</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">savedCtx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">Context</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">defer</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">WithContext</span>(<span style="color:#a6e22e">savedCtx</span>)
+</span></span><span style="display:flex;"><span>		}()
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">Propagators</span>.<span style="color:#a6e22e">Extract</span>(<span style="color:#a6e22e">savedCtx</span>, <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">HeaderCarrier</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">Header</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">opts</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">SpanStartOption</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">WithAttributes</span>(<span style="color:#a6e22e">httpconv</span>.<span style="color:#a6e22e">ServerRequest</span>(<span style="color:#a6e22e">service</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>)<span style="color:#f92672">...</span>),
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">WithSpanKind</span>(<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">SpanKindServer</span>),
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">spanName</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">SpanNameFormatter</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">spanName</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">FullPath</span>()
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">spanName</span> = <span style="color:#a6e22e">cfg</span>.<span style="color:#a6e22e">SpanNameFormatter</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">spanName</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">spanName</span> = <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;HTTP %s route not found&#34;</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">Method</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">rAttr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">semconv</span>.<span style="color:#a6e22e">HTTPRoute</span>(<span style="color:#a6e22e">spanName</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">opts</span> = append(<span style="color:#a6e22e">opts</span>, <span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">WithAttributes</span>(<span style="color:#a6e22e">rAttr</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">spanName</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// pass the span through the request context</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">WithContext</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// serve the request to the next middleware</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Next</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">status</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Writer</span>.<span style="color:#a6e22e">Status</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetStatus</span>(<span style="color:#a6e22e">httpconv</span>.<span style="color:#a6e22e">ServerStatus</span>(<span style="color:#a6e22e">status</span>))
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">status</span> &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetAttributes</span>(<span style="color:#a6e22e">semconv</span>.<span style="color:#a6e22e">HTTPStatusCode</span>(<span style="color:#a6e22e">status</span>))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Errors</span>) &gt; <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetAttributes</span>(<span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;gin.errors&#34;</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Errors</span>.<span style="color:#a6e22e">String</span>()))
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// HTML will trace the rendering of the template as a child of the</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// span in the given context. This is a replacement for</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// gin.Context.HTML function - it invokes the original function after</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// setting up the span.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">HTML</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">code</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">obj</span> <span style="color:#66d9ef">interface</span>{}) {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">tracer</span> <span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">Tracer</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracerInterface</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">tracerKey</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">tracer</span>, <span style="color:#a6e22e">ok</span> = <span style="color:#a6e22e">tracerInterface</span>.(<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">Tracer</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">tracer</span> = <span style="color:#a6e22e">otel</span>.<span style="color:#a6e22e">GetTracerProvider</span>().<span style="color:#a6e22e">Tracer</span>(
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">tracerName</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">WithInstrumentationVersion</span>(<span style="color:#a6e22e">Version</span>()),
+</span></span><span style="display:flex;"><span>		)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">savedContext</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">Context</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span> = <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">WithContext</span>(<span style="color:#a6e22e">savedContext</span>)
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opt</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">oteltrace</span>.<span style="color:#a6e22e">WithAttributes</span>(<span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;go.template&#34;</span>, <span style="color:#a6e22e">name</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">savedContext</span>, <span style="color:#e6db74">&#34;gin.renderer.html&#34;</span>, <span style="color:#a6e22e">opt</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> recover(); <span style="color:#a6e22e">r</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;error rendering template:%s: %s&#34;</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">RecordError</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetStatus</span>(<span style="color:#a6e22e">codes</span>.<span style="color:#a6e22e">Error</span>, <span style="color:#e6db74">&#34;template failure&#34;</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>		} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">HTML</span>(<span style="color:#a6e22e">code</span>, <span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">obj</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p>在 <strong>#L66</strong> 中， 使用 <code>c.Set(k,v)</code> 将 provider 放入了 gin <strong>自己实现的 Context</strong> 中。</p>
+</li>
+<li>
+<p>在 <strong>#L88-92</strong> 中， <code>tracer.Start</code> 启动了第一个 Span， 并将生成的 <strong>ctx</strong> 放入 <strong>Request</strong> 中向下传递。 <strong>之后我们将从 Request 中取 tracer provider</strong>。</p>
+</li>
+<li>
+<p>在 <strong>#L73,98</strong>, 使用 <code>httpconv.XXXXX</code> 方法进行 span 状态设置。 <code>httpconv</code> 是一个 OpenTelemetry 实现的 <strong>标准/模版</strong> 方法， 用于处理 http 请求中的各种情况。 可以多跟一下。</p>
+</li>
+<li>
+<p>在 <strong>#L71-87</strong> 中， 初始化了一些状态。</p>
+</li>
+</ol>
+<h2 id="完成单服务的-trace-树状结构">完成单服务的 Trace 树状结构</h2>
+<p>在使用的时候， 需要使用 Context 在不同的 <strong>函数/方法</strong> 之间传递 Provider。 每个 <strong>函数/方法</strong> 创建自己的 <strong>Span</strong>， 以此实现 <strong>调用的父子关系</strong>。</p>
+<ol>
+<li>在 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/utils/span.go" target="_blank">utils/span.go</a>
+ 中， 封装了一个函数 <code>Span(xxxx)</code> 提出 context 中的 provider 并启动 <code>tracer.Start(xxx)</code>。</li>
+</ol>
+<p>在 <strong>#L21</strong> 中， 对 <code>ctx</code> 进行了判断， 如果 ctx 是 <code>gin.Context</code> 的话， 就需要从 Request 中携带的 context， 这一点在上诉的 <strong>2.4.</strong> 中已经说明原因。</p>
+<p>额外的进行了一些 <strong>公共属性</strong> 的设置， 例如运行的主机名。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">utils</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/attribute&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/trace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/tangx/opentelemetry-gin-demo/global&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">spanName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">SpanStartOption</span>) (<span style="color:#a6e22e">spanctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">span</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">Span</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Value</span>(<span style="color:#a6e22e">global</span>.<span style="color:#a6e22e">TracerKey</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracer</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.(<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">Tracer</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// gin 特殊</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>); <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> = <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">Context</span>(), <span style="color:#a6e22e">spanName</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			在这里每次注入新的 Attr
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			1. host
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		*/</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 1. 从 context 中获取 &#34;public attr&#34;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// attr:=ctx.Value(&#34;&#34;)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 2. 注入 public attr</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// span.SetAttributes(attr)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span> = <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithValue</span>(<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">global</span>.<span style="color:#a6e22e">TracerKey</span>, <span style="color:#a6e22e">tracer</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// return spanctx, span</span>
+</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> = <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">spanName</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置 Attr</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrkv</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Value</span>(<span style="color:#e6db74">&#34;attrkv&#34;</span>).(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">SpanSetStringAttr</span>(<span style="color:#a6e22e">span</span>, <span style="color:#a6e22e">attrkv</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">SpanSetStringAttr</span>(<span style="color:#a6e22e">span</span>, <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;server.host&#34;</span>: <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#e6db74">&#34;HOSTNAME&#34;</span>),
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SpanSetStringAttr</span>(<span style="color:#a6e22e">span</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">Span</span>, <span style="color:#a6e22e">kvs</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrkv</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">KeyValue</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">kvs</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">attrkv</span> = append(<span style="color:#a6e22e">attrkv</span>, <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">KeyValue</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Key</span>:   <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">Key</span>(<span style="color:#a6e22e">k</span>),
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Value</span>: <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">StringValue</span>(<span style="color:#a6e22e">v</span>),
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetAttributes</span>(<span style="color:#a6e22e">attrkv</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SpanContextWithAttr</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">kv</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Value</span>(<span style="color:#e6db74">&#34;attrkv&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrkv</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">attrkv</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">kv</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">attrkv</span>[<span style="color:#a6e22e">k</span>] = <span style="color:#a6e22e">v</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithValue</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;attrkv&#34;</span>, <span style="color:#a6e22e">attrkv</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol start="2">
+<li>在 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/apis/user/info.go" target="_blank">apis/user/info.go</a>
+ 中， 通过 context 在不同 <strong>函数/方法</strong> 之间传递 tracer provider， 每个地方都调用了 <code>Span(xxx)</code> 跟踪当前情况。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">user</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;errors&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/codes&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">semconv</span> <span style="color:#e6db74">&#34;go.opentelemetry.io/otel/semconv/v1.12.0&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/trace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/tangx/opentelemetry-gin-demo/pkg/httpclient&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/tangx/opentelemetry-gin-demo/pkg/utils&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">USER_INFO_HOST</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#e6db74">&#34;USER_INFO_HOST&#34;</span>)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Info 获取用户信息</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// https://zhuanlan.zhihu.com/p/608282493</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Info</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">username</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">GetHeader</span>(<span style="color:#e6db74">&#34;UserName&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">username</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">username</span> = <span style="color:#e6db74">&#34;jane&#34;</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">name</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;RequestURI: %s&#34;</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">RequestURI</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">c</span>, <span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">info</span>(<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">username</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">JSON</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusInternalServerError</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Error: %v&#34;</span>, <span style="color:#a6e22e">err</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">JSON</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusOK</span>, <span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">info</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">UserInfo</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 注入 attr 属性</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">SpanContextWithAttr</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;user.name&#34;</span>: <span style="color:#a6e22e">name</span>})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置为 consumer kind</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opt</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">WithSpanKind</span>(<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">SpanKindConsumer</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;user info integration&#34;</span>, <span style="color:#a6e22e">opt</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">span</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">userinfo</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">UserInfo</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Name</span>: <span style="color:#a6e22e">name</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">balance</span>(<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">userinfo</span>.<span style="color:#a6e22e">Balance</span> = <span style="color:#a6e22e">b</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">c</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cellphone</span>(<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">name</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">userinfo</span>.<span style="color:#a6e22e">Cellphone</span> = <span style="color:#a6e22e">c</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">userinfo</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// balance get user balance</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">balance</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">SpanContextWithAttr</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;user.kind&#34;</span>: <span style="color:#e6db74">&#34;func.balance&#34;</span>})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;user balance&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">span</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">name</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;guanyu&#34;</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">100</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;zhangfei&#34;</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">200</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;unknown user&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">cellphone</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span> = <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">SpanContextWithAttr</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;user.kind&#34;</span>: <span style="color:#e6db74">&#34;func.cellphone&#34;</span>})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;user cellphone&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">span</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">name</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;guanyu&#34;</span>:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;131-1111-2222&#34;</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// case &#34;zhangfei&#34;:</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 	return &#34;132-2222-3333&#34;, nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;unknown user or cellphone not found&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 提交错误日志</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">RecordError</span>(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置状态</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetStatus</span>(<span style="color:#a6e22e">codes</span>.<span style="color:#a6e22e">Error</span>, <span style="color:#e6db74">&#34;unsupport user&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">semconv</span>.<span style="color:#a6e22e">HTTPAttributesFromHTTPStatusCode</span>(<span style="color:#ae81ff">500</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetAttributes</span>(<span style="color:#a6e22e">attrs</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置属性</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// span.SetAttributes(attribute.KeyValue{</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 	Key:   &#34;user.kind&#34;,</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 	Value: attribute.StringValue(&#34;user.cellphone&#34;),</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// })</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#e6db74">&#34;PORT&#34;</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;9099&#34;</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">httpclient</span>.<span style="color:#a6e22e">GET</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;http://127.0.0.1:9099/api/v1/user/info&#34;</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">UserInfo</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Name</span>      <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Balance</span>   <span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Cellphone</span> <span style="color:#66d9ef">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="应答客户端时-在-header-中默认添加-traceid">应答客户端时， 在 Header 中默认添加 TraceID</h2>
+<p>当有需求的时候（例如出现访问错误）， 需要把 TraceID 返回给用户。 这样用户在报错的时候提供 TraceID 可以快速 debug。</p>
+<p><img src="index.assets/image-20250425013228541.png" alt="image-20250425013228541"></p>
+<p>在 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/middlewares/otel/response_traceid.go" target="_blank">otel/response_traceid.go</a>
+ 创建了一个 Gin Middleware， 将 TraceID 从 Context 中提取出来， 并放到 Response Header 中。</p>
+<p>其中用到了 <code>propagation</code> 标准库， 简单快捷。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">xxxxxxxxxx1</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">package</span> <span style="color:#a6e22e">otel</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/propagation&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/tangx/opentelemetry-gin-demo/pkg/utils&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ReponseTraceID</span>() <span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">c</span>, <span style="color:#e6db74">&#34;Response Propagation&#34;</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">span</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Next</span>()
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">End</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 4. 应答客户端时， 在 Header 中默认添加 TraceID</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">traceid</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SpanContext</span>().<span style="color:#a6e22e">TraceID</span>().<span style="color:#a6e22e">String</span>()
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Header</span>(<span style="color:#e6db74">&#34;TraceID&#34;</span>, <span style="color:#a6e22e">traceid</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 6. 向后传递 Header: traceparent</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">pp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">NewCompositeTextMapPropagator</span>(
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">TraceContext</span>{},
+</span></span><span style="display:flex;"><span>		)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">carrier</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">MapCarrier</span>{}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">pp</span>.<span style="color:#a6e22e">Inject</span>(<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">carrier</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">carrier</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Header</span>(<span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}<span style="color:#66d9ef">go</span>
+</span></span></code></pre></div><h2 id="获取前方传递的-traceparent-信息">获取前方传递的 traceparent 信息</h2>
+<p>在上图 App2 中， 能够拿到 App 传递的 Traceparent header， 这样就保证了接收侧的 TraceID 连贯性。</p>
+<ol>
+<li>
+<p>在 <code>otelgin</code> 中， 提供了一个 Option 注入， <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/middlewares/otel/propagation.go" target="_blank">otel/propagation</a>
+ , 使用 <code>otelgin.WithPropagators(pptc)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">otel</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/propagation&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// PropagationExtractOption 从上游获取 traceparent, tracestate</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">PropagationExtractOption</span>() <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Option</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tc</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">TraceContext</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">WithPropagators</span>(<span style="color:#a6e22e">tc</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p>在 gin 中注册 provider 的时候， 使用 Option 即可, <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/middlewares/otel/register.go#L12" target="_blank">otel/register.go#L12</a>
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">otel</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Register</span>(<span style="color:#a6e22e">appname</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">opts</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Option</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">ProviderOption</span>(<span style="color:#a6e22e">appname</span>, <span style="color:#a6e22e">endpoint</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">PropagationExtractOption</span>(),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Middleware</span>(<span style="color:#a6e22e">appname</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ProviderOption</span>(<span style="color:#a6e22e">appname</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">endpoint</span> <span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">Option</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 1. 注册 Provider</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">provider</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">initProvider</span>(<span style="color:#a6e22e">appname</span>, <span style="color:#a6e22e">endpoint</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">otelgin</span>.<span style="color:#a6e22e">WithTracerProvider</span>(<span style="color:#a6e22e">provider</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ol>
+<h2 id="向后传递-header-traceparent">向后传递 Header: traceparent</h2>
+<p>为了保证 TraceID 的连贯性， 除了接收侧（App2）。 在 <strong>发送侧 App1</strong> 也需要做对应的操作。</p>
+<p>从 Context 中读取 TraceParent 并注入到 HTTP Request Header 中。</p>
+<ol>
+<li>
+<p>在 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/utils/carrier.go" target="_blank">utils/carrier.go#L9</a>
+ 中， 通过 <code>propagation</code> 标准库将 Header 字段找出来。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">utils</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/propagation&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">MapCarrier</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>) <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 6. 向后传递 Header: traceparent</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">pp</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">NewCompositeTextMapPropagator</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">TraceContext</span>{},
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">carrier</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">propagation</span>.<span style="color:#a6e22e">MapCarrier</span>{}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">pp</span>.<span style="color:#a6e22e">Inject</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">carrier</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">carrier</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p>在 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/httpclient/client.go#L19" target="_blank">httpclient/client.go#L19</a>
+ 中， 将找到的 Header 字段全部放到新创建的 Request Header 中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">httpclient</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;io&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/tangx/opentelemetry-gin-demo/pkg/utils&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GET</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">url</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewRequestWithContext</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>, <span style="color:#a6e22e">url</span>, <span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">headers</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">utils</span>.<span style="color:#a6e22e">MapCarrier</span>(<span style="color:#a6e22e">ctx</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">headers</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">req</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// client := http.DefaultClient</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">client</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Client</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">Timeout</span>: <span style="color:#ae81ff">5</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Do</span>(<span style="color:#a6e22e">req</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">ReadAll</span>(<span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">data</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ol>
+<h2 id="在-trace-中添加-error-log-status-attr">在 Trace 中添加 Error Log, Status, Attr</h2>
+<p>标准 API 用法。</p>
+<ol>
+<li><code>span.RecordError</code> 提交错误日志</li>
+<li><code>span.SetStatus</code> 设置 trace span 状态。 氛围 error 和 ok</li>
+<li><code>span.SetAttributes</code> 设置属性，可以通过属性搜索。 (所有属性被 <strong>索引</strong>)。</li>
+</ol>
+<h2 id="修改-trace-中的-kind-类型-已知-otelngin-提供的值为-sever-默认的值为-internal">修改 Trace 中的 Kind 类型。 已知 Otelngin 提供的值为 Sever， 默认的值为 internal</h2>
+<p>在 Tracer 启动的时候传入。 启动之后 Span 不能设置。 可以通过 <strong>Kind</strong> 类型， 表明当前步骤类型， 以后在 <strong>检索/查询</strong> 的时候更直观。</p>
+<ol>
+<li>(*) Kind 是标准字段， 是枚举类型。 其中包含 <code>internal, server, client, producer, consumer</code> 可以在代码中看到。</li>
+<li>可以通过 <code>trace.WithSpanKind</code>， 在 <code>trace.Start</code> 时作为 opt 传入。 之后不能通过 span 设置。</li>
+</ol>
+<h2 id="添加自定义属性字段">添加自定义属性字段</h2>
+<ol>
+<li>
+<p>(*) 自定义字段(Attribute)（类似 host）.</p>
+</li>
+<li>
+<p>每个 span 都是独立的。 因此 public attributes 需要在公共函数中注入 <a href="https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/utils/span.go#L27" target="_blank">utils/span.go</a>
+</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">utils</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;context&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;os&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/gin-gonic/gin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/attribute&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;go.opentelemetry.io/otel/trace&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/tangx/opentelemetry-gin-demo/global&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Span</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">spanName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">opts</span> <span style="color:#f92672">...</span><span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">SpanStartOption</span>) (<span style="color:#a6e22e">spanctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">span</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">Span</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Value</span>(<span style="color:#a6e22e">global</span>.<span style="color:#a6e22e">TracerKey</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tracer</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.(<span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">Tracer</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ctx</span>, <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// gin 特殊</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">gin</span>.<span style="color:#a6e22e">Context</span>); <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> = <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Request</span>.<span style="color:#a6e22e">Context</span>(), <span style="color:#a6e22e">spanName</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			在这里每次注入新的 Attr
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			1. host
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		*/</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 1. 从 context 中获取 &#34;public attr&#34;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// attr:=ctx.Value(&#34;&#34;)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 2. 注入 public attr</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// span.SetAttributes(attr)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span> = <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithValue</span>(<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">global</span>.<span style="color:#a6e22e">TracerKey</span>, <span style="color:#a6e22e">tracer</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// return spanctx, span</span>
+</span></span><span style="display:flex;"><span>	} <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span> = <span style="color:#a6e22e">tracer</span>.<span style="color:#a6e22e">Start</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">spanName</span>, <span style="color:#a6e22e">opts</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 设置 Attr</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrkv</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Value</span>(<span style="color:#e6db74">&#34;attrkv&#34;</span>).(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">SpanSetStringAttr</span>(<span style="color:#a6e22e">span</span>, <span style="color:#a6e22e">attrkv</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">SpanSetStringAttr</span>(<span style="color:#a6e22e">span</span>, <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;server.host&#34;</span>: <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#e6db74">&#34;HOSTNAME&#34;</span>),
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">spanctx</span>, <span style="color:#a6e22e">span</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SpanSetStringAttr</span>(<span style="color:#a6e22e">span</span> <span style="color:#a6e22e">trace</span>.<span style="color:#a6e22e">Span</span>, <span style="color:#a6e22e">kvs</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrkv</span> <span style="color:#f92672">:=</span> []<span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">KeyValue</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">kvs</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">attrkv</span> = append(<span style="color:#a6e22e">attrkv</span>, <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">KeyValue</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Key</span>:   <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">Key</span>(<span style="color:#a6e22e">k</span>),
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Value</span>: <span style="color:#a6e22e">attribute</span>.<span style="color:#a6e22e">StringValue</span>(<span style="color:#a6e22e">v</span>),
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">span</span>.<span style="color:#a6e22e">SetAttributes</span>(<span style="color:#a6e22e">attrkv</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">SpanContextWithAttr</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>, <span style="color:#a6e22e">kv</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>) <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Value</span>(<span style="color:#e6db74">&#34;attrkv&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">attrkv</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">attrkv</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">kv</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">attrkv</span>[<span style="color:#a6e22e">k</span>] = <span style="color:#a6e22e">v</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithValue</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;attrkv&#34;</span>, <span style="color:#a6e22e">attrkv</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p>因此使用 Context 进行传递， 在不同的 方法/函数 内进行公共 attr 共享。 <strong>（看自己情况实现）</strong></p>
+</li>
+</ol>
+<h2 id="todo2-request-tree">Todo2: Request Tree</h2>
+<p class="mathjax">nginx/web -> app1----> app2(get balance) -----> app3 (check db)
+                   \
+                    \-> app4(get cellphone) ----> app5 (check redis)</p>
+
+<p><strong>正常图示</strong></p>
+<p><img src="index.assets/image-20250425014102333.png" alt="image-20250425014102333"></p>
+<p><strong>有 Error 图示</strong></p>
+<p><img src="index.assets/image-20250425014123733.png" alt="image-20250425014123733"></p>
+
+
+        
+      </section>
+
+      
+      <div class="divider w-full"></div>
+      <div class="flex flex-col md:flex-row justify-between gap-4 py-4 w-full">
+        
+        <a class="group btn btn-outline" href="/posts/golang/slog/" title="Slog">
+          <ion-icon name="chevron-back"></ion-icon>
+          <div class="inline-flex flex-col items-start">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">上一页</span>
+            <span class="max-w-48 truncate">Slog</span>
+          </div>
+        </a>
+        
+
+        
+        <a class="group btn btn-outline" href="/posts/cicd/tekton/" title="Tekton">
+          <div class="inline-flex flex-col items-end">
+            <span class="text-base-content/60 group-hover:text-neutral-content/60 text-xs font-normal">下一页</span>
+            <span class="max-w-48 truncate">Tekton</span>
+          </div>
+          <ion-icon name="chevron-forward"></ion-icon>
+        </a>
+        
+      </div>
+      
+
+      
+    </article>
+  </div>
+
+  
+  <div class="hidden lg:flex lg:flex-col lg:items-end lg:col-span-1">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#使用-otel-collect-contrib-初始化-traceprovider">使用 Otel-Collect-Contrib 初始化 trace.Provider</a></li>
+    <li><a href="#使用-otelgin-接入-traceprovider">使用 Otelgin 接入 TraceProvider</a></li>
+    <li><a href="#完成单服务的-trace-树状结构">完成单服务的 Trace 树状结构</a></li>
+    <li><a href="#应答客户端时-在-header-中默认添加-traceid">应答客户端时， 在 Header 中默认添加 TraceID</a></li>
+    <li><a href="#获取前方传递的-traceparent-信息">获取前方传递的 traceparent 信息</a></li>
+    <li><a href="#向后传递-header-traceparent">向后传递 Header: traceparent</a></li>
+    <li><a href="#在-trace-中添加-error-log-status-attr">在 Trace 中添加 Error Log, Status, Attr</a></li>
+    <li><a href="#修改-trace-中的-kind-类型-已知-otelngin-提供的值为-sever-默认的值为-internal">修改 Trace 中的 Kind 类型。 已知 Otelngin 提供的值为 Sever， 默认的值为 internal</a></li>
+    <li><a href="#添加自定义属性字段">添加自定义属性字段</a></li>
+    <li><a href="#todo2-request-tree">Todo2: Request Tree</a></li>
+  </ul>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="dream-grid dream-grid-about">
+  
+  
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">About Me</div>
+
+        <div class="prose dark:prose-invert">
+          <p>没什么想介绍的，一个很大众的全栈码农&hellip;</p>
+<p>喜欢代码，车，马，真的是 🐎</p>
+<p>讨厌别人让我给自己的代码写文档
+最厌烦的是别人的程序没有留下文档</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 dream-column">
+    <article
+      class="card card-compact bg-base-100 hover:bg-base-content/10 shadow-xl dark:border dark:border-base-content/30"
+    >
+      <div class="card-body">
+        <div class="card-title">目标</div>
+
+        <div class="prose dark:prose-invert">
+          <p>学习 K8S 源码！加油！</p>
+
+        </div>
+      </div>
+    </article>
+  </div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 px-4 py-12">
+
+  <div>
+  
+ 
+  
+
+  
+
+  
+</div>
+
+  
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme =  null 
+</script>
+
+
+
+
+
+  
+  
+  <script src = "/js/imagesloaded.pkgd.min.js"></script>
+  <script src = "/js/masonry.pkgd.min.js"></script>
+
+  
+  
+    
+  
+  <script src="/js/grid.min.js"></script>
+
+
+
+
+  
+
+<script src="/js/main.min.js"></script>
+
+    
+
+
+
+
+
+
+
+
+<script src = "/js/luxon@1.26.0.js"></script>
+<script>
+  format()
+
+  function format() {
+    document.querySelectorAll('span[data-format="luxon"]').forEach(el => {
+      const date = el.textContent
+
+      el.textContent = luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日")
+    })
+  }
+</script>
+
+
+
+
+
+
+
+<script type="module">
+  import mediumZoom from 'https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/+esm';
+  mediumZoom('#dream-single-post-content img', {
+    background: 'oklch(var(--b1))',
+    margin: 24,
+  })
+</script>
+
+
+
+
+
+    
+
+    
+      <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [
+        ['\\[', '\\]'],
+        ['$$', '$$'],
+      ], 
+      inlineMath: [['\\(', '\\)']], 
+    },
+  }
+</script>
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.4.0/dist/ionicons/ionicons.js"></script>
+  </body>
+</html>

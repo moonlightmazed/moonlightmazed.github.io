@@ -16,6 +16,13 @@
       <description>&lt;p&gt;slog 日志包是 Go 语言中的一个结构化日志库，旨在提供一个简单而强大的日志系统。因为标准日志库 log 过于简陋，社区中经常有人吐槽，Go 官方也承认了这一点，于是 Go 团队成员 Jonathan Amsterdam 操刀设计了新的日志库 slog，其放在 log/slog 目录中。&lt;/p&gt;</description>
     </item>
     <item>
+      <title>Golang 接入 OpenTelemetry 完整过程和思路</title>
+      <link>https://moonlightmazed.github.io/posts/apm/opentelemetry/</link>
+      <pubDate>Mon, 03 Jun 2024 14:11:02 +0800</pubDate>
+      <guid>https://moonlightmazed.github.io/posts/apm/opentelemetry/</guid>
+      <description>&lt;h2 id=&#34;使用-otel-collect-contrib-初始化-traceprovider&#34;&gt;使用 Otel-Collect-Contrib 初始化 trace.Provider&lt;/h2&gt;&#xA;&lt;p&gt;这里使用 &lt;code&gt;app -&amp;gt; collector-contrib&lt;/code&gt; 进行转发， 应用不直接对后端的存储。 &lt;strong&gt;适配性&lt;/strong&gt; 更高。&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;index.assets/image-20250425012631102.png&#34; alt=&#34;image-20250425012631102&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;code&gt;collector-contrib&lt;/code&gt; 最常见的两种协议 &lt;code&gt;grpc / http(s)&lt;/code&gt;。 传入 endpoint 地址进行初始化 Provider， 参考代码 &lt;a href=&#34;https://github.com/tangx/opentelemetry-gin-demo/tree/main/pkg/middlewares/otel/provider.go#41&#34; target=&#34;_blank&#34;&gt;grpcExporter 和 httpExporter&lt;/a&gt;&#xA;&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Tekton</title>
       <link>https://moonlightmazed.github.io/posts/cicd/tekton/</link>
       <pubDate>Thu, 14 Mar 2024 03:03:52 +0800</pubDate>
